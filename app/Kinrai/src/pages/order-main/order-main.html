@@ -1,0 +1,21 @@
+<ion-header class="header">
+  <ion-navbar  color="primary">
+  <button ion-button icon-left menuToggle>  
+      <ion-icon md="md-menu"></ion-icon>
+    </button>
+    <ion-title>
+      Home
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <!-- <queue-list [queues]="queues" (waitTime)="totalWaitTime=$event"></queue-list> -->
+	<order-list></order-list>
+  
+<!-- 	<ion-item no-lines>
+		<button ion-button (click)="showCreateFoodModal()">Create Food</button>
+		<button ion-button (click)="showAddQueueModal()">Add Order</button>
+		<p item-right>waiting time: {{totalWaitTime}} </p>
+	</ion-item> -->
+</ion-content>
