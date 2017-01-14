@@ -1,17 +1,27 @@
 var express = require("express");
-var app = express();
+var fs = require("fs");
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
-var fs = require("fs");
+
+var os = require('os');
+var ifaces = os.networkInterfaces();
+
+var app = express();
+
+
 var Food = require("./models/food");
 var Bill = require("./models/bill");
 var Order = require("./models/order");
 
-mongoose.connect('mongodb://localhost/kinrai').then(function(){
+
+
+mongoose.connect('mongodb://localhost/kinrai')
+.then(function(){
 	console.log("connected to database");
-})
-app.use(bodyParser.urlencoded({'extended':'true'}));
-app.use(bodyParser.json());
+}).catch(err =>{ console.log(err)});
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
@@ -20,29 +30,45 @@ app.use(function(req, res, next) {
 });
 
 
-app.post('/food/new', function(req, res){
-
-	var food = req.body.food
-	console.log(food);
-	createFood(food);
-	res.send("i got it Bro");
-});
-
-app.get('/food', function(req, res){
-	var e = {
-		firstName : "arnon",
-		lastName: "kaewprasert"
-	};
-	res.json(e);
-});
-
-
-function createFood(food){
-	console.log(food);
-	var newFood = new Food(food);
-	console.log(newFood);
+getIpAddress = function(){
+	let ip;
+	Object.keys(ifaces).forEach(function (ifname) {
+		var alias = 0;
+		ifaces[ifname].forEach(function (iface) {
+			if ('IPv4' !== iface.family || iface.internal !== false) {
+				return;
+			}
+			//Note this method will works at only one alias, that is 0 
+			// console.log("ww" + iface.address);
+			ip = iface.address;
+			// return iface.address;
+			// ++alias;
+		});
+	});
+	return ip;
 }
 
+// console.log(getIpAddress());
 
- app.listen(8080);
+app.post('/newfood',(req, res)=>{
+	let food = req.body.food;
+	// console.log(food);
+	let newPath = __dirname + "/uploads/images/foods/" + food.image.title;
+	let newData = new Buffer(food.image.data, "binary");
+	fs.writeFileSync(newPath, newData);
+	// let ip = getIpAddress();
+	// console.log("in new food: " + ip);
+	res.json({url: "http://" + getIpAddress() + ":8080" + "/uploads/images/foods/" + food.image.title});
+}
+);
+
+app.get('/uploads/images/foods/:file', function (req, res){
+	file = req.params.file;
+	var img = fs.readFileSync(__dirname + "/uploads/images/foods/" + file);
+	res.writeHead(200, {'Content-Type': 'image/jpg' });
+	res.end(img, 'binary');
+
+});
+
+app.listen(8080);
 console.log("App listening on port 8080");

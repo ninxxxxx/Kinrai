@@ -14,7 +14,8 @@ import 'rxjs/add/operator/map';
   	server: string;
 
   	constructor(private http: Http) {
-  		this.server = 'http://localhost:8080/';
+
+  		this.server = 'http://172.30.230.105:8080/';
   		// this.server = 'http://192.168.1.102:5555/';
 
   	}
@@ -29,33 +30,34 @@ import 'rxjs/add/operator/map';
   	}
 
   	createOrder(food){
-  		let url = this.server + 'newOrder'
-  		let header = new Headers({ 'content-type' : 'application/json' });
-  		let options = new RequestOptions({ headers: header});
+      // let url = this.server + 'newOrder'
+      let url = this.server + 'newfood'
+      let header = new Headers({ 'content-type' : 'application/json' });
+      let options = new RequestOptions({ headers: header});
 
-  		let amount = 2;
+      let amount = 2;
 
-  		let response = this.http.post(url, {food, amount}, options).map(res=> res.json());
-  		return response;
-  	}
+      let response = this.http.post(url, {food, amount}, options).map(res=> res.json());
+      return response;
+    }
 
-  	createFood(){
-  		let url = this.server + 'newOrder';
+    createFood(food){
+      let url = this.server + 'newfood';
 
-  		let header = new Headers({ 'content-type' : 'application/json' });
-  		let options = new RequestOptions({ headers: header});
+      let header = new Headers({ 'content-type' : 'application/json' });
+      let options = new RequestOptions({ headers: header});
 
-  		let food = {
-  			title: "food from app",
-  			price: 12,
-  			type: "snack",
-  			category: "test",
-  			estTime: 2
-  		}
+      // let food = {
+      //   title: "food from app",
+      //   price: 12,
+      //   type: "snack",
+      //   category: "test",
+      //   estTime: 2
+      // }
 
-  		let response = this.http.post(url, {food}, options).map(res => res.json());
-  		// console.log(response);
-  		return response;
-  	}
+      let response = this.http.post(url, {food}, options).map(res => res.json());
+      // console.log(response);
+      return response;
+    }
 
   }
