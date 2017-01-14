@@ -6,7 +6,8 @@ var foodSchema = new Schema({
 	price: {type: Number, default: 0},
 	type: {type: String},
 	category: {type: String},
-	estTime: {type: Number}
+	estTime: {type: Number},
+	image: {type: Buffer, contentType: String}
 });
 
 foodSchema.methods.getPrice = function(){
