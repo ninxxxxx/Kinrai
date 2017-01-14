@@ -40,12 +40,7 @@ import { ModalAddFoodComponent } from '../modal-add-food/modal-add-food';
       public toastCtrl: ToastController,
       public modalCtrl: ModalController
       ) {
-      document.addEventListener('deviceready', ()=>{
-        console.log("Device is Ready: window.Permissions");
-        this.permissionss = cordova.plugins.permissions;  
-        // console.log("" + this.permissions + " " + this.permissionss + " " + this.permissionsss);
-        // if(this.permissions == undefined) console.log("Permission is Undefined :("); 
-      });
+      
     }
 
     ngOnInit(){
@@ -83,70 +78,6 @@ import { ModalAddFoodComponent } from '../modal-add-food/modal-add-food';
           // FilePath.resolveNativePath(uri).then(filePath => console.log("filePath: " + filePath)).catch(err => console.log(err));
 
 
-          b(){
-
-            FileChooser.open()
-            .then(uri => {
-              console.log("PLEASE ATOM");
-              // console.log("" + cordova.file.dataDirectory);
-              let uripath = "" + uri;
-
-              window.FilePath.resolveNativePath(uripath,
-                url =>{
-                  console.log("I GOT FILE PATH !! : " + url);
-                  this.img_url = url;
-                },
-                err =>{
-                  console.log("FUCKING ERROR: " + err);
-                }
-                );
-            }).catch(e => console.log(e));   
-
-          }
-
-          bb(){
-
-            this.permissionss.hasPermission(this.permissionss.READ_EXTERNAL_STORAGE,
-              status => {
-                this.checkPermissionCallback(status);
-                FileChooser.open()
-                .then(uri => 
-                {
-                  FilePath.resolveNativePath(uri)
-                  .then(filePath => console.log("filePath from FilePath: " + filePath))
-                  .catch(err => console.log(err));
-
-                  let uripath = "" + uri;
-
-                  window.FilePath.resolveNativePath(uripath,
-                    url =>{
-                      console.log("FilePath From window.FilePath : " + url);
-                      this.img_url = url;
-                    },
-                    err =>{
-                      console.log("FUCKING ERROR: " + err);
-                    }
-                    );
-                }).catch(e => console.log(e));       
-              },
-              () => {console.log("PERMISSION ERROR")}
-              );
-
-          }
-
-          checkPermissionCallback(status){
-            if(!status.hasPermission){
-              let errorCallback = function(){
-                console.warn('External Reading is turn off');
-              }
-              this.permissionss.requestPermission(this.permissionss.READ_EXTERNAL_STORAGE,
-                status =>{
-                  if(!status.hasPermission) errorCallback();
-                },
-                errorCallback
-                );
-            }
-          }
 
 
 

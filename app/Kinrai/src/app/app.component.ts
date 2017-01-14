@@ -7,11 +7,12 @@ import { OrderMainPage } from '../pages/order-main/order-main';
 import { ManagementPage } from '../pages/management/management';
 import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
+
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage = TabsPage;
+  rootPage = FoodCategoriesPage;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
   @ViewChild(Nav) nav: Nav;
   constructor(platform: Platform) {

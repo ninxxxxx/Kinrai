@@ -14,7 +14,7 @@ import 'rxjs/add/operator/map';
   	server: string;
 
   	constructor(private http: Http) {
-  		this.server = 'http://localhost:5555/';
+  		this.server = 'http://localhost:8080/';
   		// this.server = 'http://192.168.1.102:5555/';
 
   	}

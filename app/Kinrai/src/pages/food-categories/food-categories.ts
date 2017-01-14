@@ -25,6 +25,7 @@ export class FoodCategoriesPage {
 
   	ionViewDidLoad() {
   		console.log('Hello FoodsPage Page');
+      this.openFoodByType("Main Dish");
   	}
 
     openFoodByType(category){
