@@ -6,7 +6,10 @@ var foodSchema = new Schema({
 	price: {type: Number, default: 0},
 	type: {type: String},
 	category: {type: String},
-	estTime: {type: Number}
+	estTime: {type: Number},
+	img_url: {type: String},
+	ordered_count: {type: Number},
+	toppings: [{type: Schema.Types.ObjectId, ref: 'Topping'}] 
 });
 
 foodSchema.methods.getPrice = function(){
@@ -19,4 +22,4 @@ foodSchema.methods.getPrice = function(){
 
 var Food = mongoose.model('Food', foodSchema);
 
-module.exports = Food;
+module.exports = Food; 

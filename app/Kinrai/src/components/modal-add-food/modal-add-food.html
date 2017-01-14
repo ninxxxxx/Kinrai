@@ -19,11 +19,15 @@
 
 
 <ion-content >
+{{img_url}}
 	<ion-list class="field-list">
-		<ion-item>
-			<button ion-button clear block>
+		<ion-item *ngIf="!img_url">
+			<button ion-button clear block (click)="selectImage()">
 				Tap to Add Picture
 			</button>
+		</ion-item>
+		<ion-item *ngIf="img_url">
+			<img [src]="img_url">
 		</ion-item>
 		<!-- <ion-item>
 			<ion-label color="primary" stacked >Picture</ion-label>

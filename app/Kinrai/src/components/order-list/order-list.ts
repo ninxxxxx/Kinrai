@@ -83,201 +83,201 @@ import { ModalAddFoodComponent } from '../modal-add-food/modal-add-food';
           // FilePath.resolveNativePath(uri).then(filePath => console.log("filePath: " + filePath)).catch(err => console.log(err));
 
 
-          b(){
+          // b(){
 
-            FileChooser.open()
-            .then(uri => {
-              console.log("PLEASE ATOM");
-              // console.log("" + cordova.file.dataDirectory);
-              let uripath = "" + uri;
+            //   FileChooser.open()
+            //   .then(uri => {
+              //     console.log("PLEASE ATOM");
+              //     // console.log("" + cordova.file.dataDirectory);
+              //     let uripath = "" + uri;
 
-              window.FilePath.resolveNativePath(uripath,
-                url =>{
-                  console.log("I GOT FILE PATH !! : " + url);
-                  this.img_url = url;
-                },
-                err =>{
-                  console.log("FUCKING ERROR: " + err);
-                }
-                );
-            }).catch(e => console.log(e));   
+              //     window.FilePath.resolveNativePath(uripath,
+              //       url =>{
+                //         console.log("I GOT FILE PATH !! : " + url);
+                //         this.img_url = url;
+                //       },
+                //       err =>{
+                  //         console.log("FUCKING ERROR: " + err);
+                  //       }
+                  //       );
+                  //   }).catch(e => console.log(e));   
 
-          }
+                  // }
 
-          bb(){
+                  bb(){
 
-            this.permissionss.hasPermission(this.permissionss.READ_EXTERNAL_STORAGE,
-              status => {
-                this.checkPermissionCallback(status);
-                FileChooser.open()
-                .then(uri => 
-                {
-                  FilePath.resolveNativePath(uri)
-                  .then(filePath => console.log("filePath from FilePath: " + filePath))
-                  .catch(err => console.log(err));
+                    this.permissionss.hasPermission(this.permissionss.READ_EXTERNAL_STORAGE,
+                      status => {
+                        this.checkPermissionCallback(status);
+                        FileChooser.open()
+                        .then(uri => 
+                        {
+                          FilePath.resolveNativePath(uri)
+                          .then(filePath => console.log("filePath from FilePath: " + filePath))
+                          .catch(err => console.log(err));
 
-                  let uripath = "" + uri;
+                          let uripath = "" + uri;
 
-                  window.FilePath.resolveNativePath(uripath,
-                    url =>{
-                      console.log("FilePath From window.FilePath : " + url);
-                      this.img_url = url;
-                    },
-                    err =>{
-                      console.log("FUCKING ERROR: " + err);
-                    }
-                    );
-                }).catch(e => console.log(e));       
-              },
-              () => {console.log("PERMISSION ERROR")}
-              );
+                          window.FilePath.resolveNativePath(uripath,
+                            url =>{
+                              console.log("FilePath From window.FilePath : " + url);
+                              this.img_url = url;
+                            },
+                            err =>{
+                              console.log("FUCKING ERROR: " + err);
+                            }
+                            );
+                        }).catch(e => console.log(e));       
+                      },
+                      () => {console.log("PERMISSION ERROR")}
+                      );
 
-          }
+                  }
 
-          checkPermissionCallback(status){
-            if(!status.hasPermission){
-              let errorCallback = function(){
-                console.warn('External Reading is turn off');
-              }
-              this.permissionss.requestPermission(this.permissionss.READ_EXTERNAL_STORAGE,
-                status =>{
-                  if(!status.hasPermission) errorCallback();
-                },
-                errorCallback
-                );
-            }
-          }
-
-
-
-
-
-
-
-          createOrder(food){
-            this.orderService.createOrder(food).subscribe(
-              res => {
-                console.log(res);
-                this.toast(res)
-              },
-              err =>{
-                this.toast("Error : " + err);
-              },
-              () =>{
-                console.log("DONE")
-              }
-              );
-
-          }
-
-
-
-
-          createFood(){
-            this.orderService.createFood().subscribe(
-              res => {
-                console.log("RES: " + res);
-                this.toast(res);
-
-              },
-              err =>{
-                this.toast("Error : " + err);
-              },
-              () =>{
-                console.log("DONE")
-              }
-
-              )
-          }
-
-          getOrders(){
-            this.orderService.getOrders().subscribe(
-              data =>{
-                if(data != ""){
-                  this.orders = data;
-                  console.log("food from server : " + this.orders);
-                  this.toast("Got Orders");
-                }else{
-                  this.orders = null;
-                  this.toast("Empty")
-                }
-              },
-              err =>{
-                console.log("Error : " + err);
-                this.toast("" + err);
-              },
-              () => {
-                console.log("Get Food's list is Completed");
-              }
-              );
-          }
-          //=================================================
-          // changeWaitTime(){
-            //   this.totalWaitTime = 0;
-            //   for(let i in this.queues){
-              //     this.totalWaitTime += this.queues[i].estTime;
-              //     this.queues[i].waitTime = 0;
-              //     this.queues[i].waitTime = this.totalWaitTime;
-
-              //   }
-              //   this.waitTime.emit(this.totalWaitTime);
-
-
-              // }
-              //==================================================
-              toggleDetails(order){
-                console.log("toggle!");
-                if(this.isToggle != order.food.title)
-                {
-                  this.isToggle = order.food.title;
-                }else{
-                  this.isToggle = "";
-                }
-                //===============================================
-                // console.log("PREV_order" + this.prevOrder);
-                // console.log("CUR_order" + order);
-
-                // let index = this.orders.indexOf(order);
-                // if(index > -1){
-                  //   this.orders[index].isToggle  = !this.orders[index].isToggle;  
-
-                  //   if(this.prevOrder != null){
-                    //     if(JSON.stringify(this.orders[index]) != JSON.stringify(this.prevOrder)){
-                      //       let prevIndex = this.orders.indexOf(this.prevOrder);
-                      //       if(this.orders[prevIndex].isToggle){
-                        //         this.orders[prevIndex].isToggle = !this.orders[prevIndex].isToggle;
-                        //       }
-                        //     }
-                        //   }
-                        //   this.prevOrder = order;
-                        // }
+                  checkPermissionCallback(status){
+                    if(!status.hasPermission){
+                      let errorCallback = function(){
+                        console.warn('External Reading is turn off');
                       }
-                      //===================================================
-                      // toggleReOrder(){
-                        //   this.isRe = !this.isRe;
-                        // }
-                        //===================================================
-                        // deleteQueue(queue){
-                          //   let index = this.queues.indexOf(queue);
+                      this.permissionss.requestPermission(this.permissionss.READ_EXTERNAL_STORAGE,
+                        status =>{
+                          if(!status.hasPermission) errorCallback();
+                        },
+                        errorCallback
+                        );
+                    }
+                  }
 
-                          //   if(index > -1){
-                            //     if(JSON.stringify(this.queues[index]) == JSON.stringify(this.prevQueue)){
-                              //       this.prevQueue = null;
-                              //     }
-                              //     this.queues.splice(index, 1);
-                              //   }
-                              //   // this.changeWaitTime();
 
-                              // }
 
-                              // reOrderQueues(indexes){
-                                //   this.queues = reorderArray(this.queues, indexes);
-                                //   // this.changeWaitTime();
+
+
+
+
+                  createOrder(food){
+                    this.orderService.createOrder(food).subscribe(
+                      res => {
+                        console.log(res);
+                        this.toast(res)
+                      },
+                      err =>{
+                        this.toast("Error : " + err);
+                      },
+                      () =>{
+                        console.log("DONE")
+                      }
+                      );
+
+                  }
+
+
+
+
+                  // createFood(){
+                  //   this.orderService.createFood().subscribe(
+                  //     res => {
+                  //       console.log("RES: " + res);
+                  //       this.toast(res);
+
+                  //     },
+                  //     err =>{
+                  //       this.toast("Error : " + err);
+                  //     },
+                  //     () =>{
+                  //       console.log("DONE")
+                  //     }
+
+                  //     )
+                  // }
+
+                  getOrders(){
+                    this.orderService.getOrders().subscribe(
+                      data =>{
+                        if(data != ""){
+                          this.orders = data;
+                          console.log("food from server : " + this.orders);
+                          this.toast("Got Orders");
+                        }else{
+                          this.orders = null;
+                          this.toast("Empty")
+                        }
+                      },
+                      err =>{
+                        console.log("Error : " + err);
+                        this.toast("" + err);
+                      },
+                      () => {
+                        console.log("Get Food's list is Completed");
+                      }
+                      );
+                  }
+                  //=================================================
+                  // changeWaitTime(){
+                    //   this.totalWaitTime = 0;
+                    //   for(let i in this.queues){
+                      //     this.totalWaitTime += this.queues[i].estTime;
+                      //     this.queues[i].waitTime = 0;
+                      //     this.queues[i].waitTime = this.totalWaitTime;
+
+                      //   }
+                      //   this.waitTime.emit(this.totalWaitTime);
+
+
+                      // }
+                      //==================================================
+                      toggleDetails(order){
+                        console.log("toggle!");
+                        if(this.isToggle != order.food.title)
+                        {
+                          this.isToggle = order.food.title;
+                        }else{
+                          this.isToggle = "";
+                        }
+                        //===============================================
+                        // console.log("PREV_order" + this.prevOrder);
+                        // console.log("CUR_order" + order);
+
+                        // let index = this.orders.indexOf(order);
+                        // if(index > -1){
+                          //   this.orders[index].isToggle  = !this.orders[index].isToggle;  
+
+                          //   if(this.prevOrder != null){
+                            //     if(JSON.stringify(this.orders[index]) != JSON.stringify(this.prevOrder)){
+                              //       let prevIndex = this.orders.indexOf(this.prevOrder);
+                              //       if(this.orders[prevIndex].isToggle){
+                                //         this.orders[prevIndex].isToggle = !this.orders[prevIndex].isToggle;
+                                //       }
+                                //     }
+                                //   }
+                                //   this.prevOrder = order;
                                 // }
-
-                                showModalAddFood(){
-                                  let modal = this.modalCtrl.create(ModalAddFoodComponent)
-                                  modal.present();
-                                }  
-
                               }
+                              //===================================================
+                              // toggleReOrder(){
+                                //   this.isRe = !this.isRe;
+                                // }
+                                //===================================================
+                                // deleteQueue(queue){
+                                  //   let index = this.queues.indexOf(queue);
+
+                                  //   if(index > -1){
+                                    //     if(JSON.stringify(this.queues[index]) == JSON.stringify(this.prevQueue)){
+                                      //       this.prevQueue = null;
+                                      //     }
+                                      //     this.queues.splice(index, 1);
+                                      //   }
+                                      //   // this.changeWaitTime();
+
+                                      // }
+
+                                      // reOrderQueues(indexes){
+                                        //   this.queues = reorderArray(this.queues, indexes);
+                                        //   // this.changeWaitTime();
+                                        // }
+
+                                        showModalAddFood(){
+                                          let modal = this.modalCtrl.create(ModalAddFoodComponent)
+                                          modal.present();
+                                        }  
+
+                                      }

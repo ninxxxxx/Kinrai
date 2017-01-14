@@ -7,7 +7,7 @@ var orderSchema = new Schema({
 	food: {type: mongoose.Schema.Types.ObjectId, ref: 'Food'},
 	amount: {type: Number, default: 1},
 	date: {type: Date, default: Date.now},
-	optional: {type: String},
+	selectedToppings: [{title: String, price: Number}],
 	price: {type: Number},
 	status: {type: String}
 
@@ -23,6 +23,6 @@ orderSchema.methods.initStatus = function(){
 	console.log("initialize status");
 }
 
-var order = mongoose.model('Order', orderSchema);
+var Order = mongoose.model('Order', orderSchema);
 
-module.exports = order;
+module.exports = Order;
