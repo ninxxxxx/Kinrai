@@ -7,7 +7,7 @@ var orderSchema = new Schema({
 	food: {type: mongoose.Schema.Types.ObjectId, ref: 'Food'},
 	amount: {type: Number, default: 1},
 	date: {type: Date, default: Date.now},
-	selectedToppings: [{title: String, price: Number}],
+	selected_toppings: [{title: String, price: Number}],
 	price: {type: Number},
 	status: {type: String}
 

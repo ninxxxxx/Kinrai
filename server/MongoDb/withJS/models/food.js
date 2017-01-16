@@ -4,11 +4,11 @@ var Schema = mongoose.Schema;
 var foodSchema = new Schema({
 	title: {type: String, required: true},
 	price: {type: Number, default: 0},
-	type: {type: String},
-	category: {type: String},
-	estTime: {type: Number},
+	type: {type: Schema.Types.ObjectId, ref: 'Type'},
+	category: {type: Schema.Types.ObjectId, ref: 'Category'},
+	estimate_time: {type: Number},
 	img_url: {type: String},
-	ordered_count: {type: Number},
+	ordered_count: {type: Number, default: 0},
 	toppings: [{type: Schema.Types.ObjectId, ref: 'Topping'}] 
 });
 

@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var typeSchema = new Schema({
 	title: {type: String, required: true},
+	category: {type: Schema.Types.ObjectId, ref: 'Category'},
 	foods: [{type: Schema.Types.ObjectId, ref: 'Food'}]
 });
 

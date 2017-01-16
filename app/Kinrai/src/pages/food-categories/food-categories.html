@@ -17,7 +17,7 @@
 <button ion-button (click)="openPrompt()">New category</button>
 	<ion-list no-lines>
 		<div  *ngFor="let cat of categories">
-			<button ion-item (click)="openFoodByType(cat)">{{cat}}</button>
+			<button ion-item (click)="openFoodByType(cat)">{{cat.title}}</button>
 		</div>
 	</ion-list>
 </ion-content>

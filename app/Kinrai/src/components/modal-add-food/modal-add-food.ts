@@ -1,5 +1,6 @@
+
 import { Component } from '@angular/core';
-import { NavController, ViewController, NavParams, ModalController } from 'ionic-angular';
+import { NavController, ViewController, NavParams, ModalController, ToastController} from 'ionic-angular';
 import { File, FilePath, FileChooser } from 'ionic-native';
 
 import {  OrderService } from '../../providers/order-service';
@@ -32,11 +33,12 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
     selectedOptions: Array<any>;
     
     constructor(
-      private orderService: OrderService,
       public navCtrl: NavController, 
-      public navParams: NavParams, 
       private viewCtlr: ViewController, 
-      public modalCtrl: ModalController
+      public modalCtrl: ModalController,
+      public toastCtrl: ToastController,
+      public navParams: NavParams, 
+      private orderService: OrderService,
       ) 
     {
       this.categories = this.navParams.get('categories');
@@ -53,6 +55,7 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
         this.permissions = cordova.plugins.permissions;  
       });
     }
+
     openNewOption(){
       let modal = this.modalCtrl.create(ModalAddOptionComponent);
       modal.present();
@@ -60,6 +63,16 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
     cancel(){
       this.viewCtlr.dismiss();
     }
+
+    toast(messages){
+      let toast = this.toastCtrl.create({
+        message: messages,
+        duration: 3000
+      });
+      toast.present();
+    }
+
+
 
     selectImage(){
 
@@ -89,26 +102,26 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
 
     chooseImage(){
       FileChooser.open()
-                .then(uri => 
-                {
-                  // FilePath.resolveNativePath(uri)
-                  // .then(filePath => console.log("filePath from FilePath: " + filePath))
-                  // .catch(err => console.log(err));
+      .then(uri => 
+      {
+        // FilePath.resolveNativePath(uri)
+        // .then(filePath => console.log("filePath from FilePath: " + filePath))
+        // .catch(err => console.log(err));
 
-                  let uripath = "" + uri;
+        let uripath = "" + uri;
 
-                  window.FilePath.resolveNativePath(uripath,
-                    url =>{
-                      console.log("FilePath From window.FilePath : " + url);
-                      // this.img_url = url;
-                      this.extractImage("" + url);
-                      
-                    },
-                    err =>{
-                      console.log("FUCKING ERROR: " + err);
-                    }
-                    );
-                }).catch(e => console.log(e));      
+        window.FilePath.resolveNativePath(uripath,
+          url =>{
+            console.log("FilePath From window.FilePath : " + url);
+            // this.img_url = url;
+            this.extractImage("" + url);
+
+          },
+          err =>{
+            console.log("FUCKING ERROR: " + err);
+          }
+          );
+      }).catch(e => console.log(e));      
     }
 
 
@@ -118,14 +131,14 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
       let path = url.replace(fileName, "");
       console.log("fileName: " + fileName + "\n" + "path: " + path);
       File.readAsBinaryString(path, fileName)
-          .then(data =>{
-            this.food.image = {
-              title: fileName,
-              data: data,
-            }
-            this.newFood();
-          })
-          .catch(err => console.log("ERROR: "+ err));
+      .then(data =>{
+        this.food.image = {
+          title: fileName,
+          data: data,
+        }
+        this.newFood();
+      })
+      .catch(err => console.log("ERROR: "+ err));
     }
 
 
@@ -134,21 +147,21 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
 
     newFood(){
       // let food = {
-      //   title: "arnon"
-      // }
-      this.orderService.createFood(this.food)
-      .subscribe(
-        res =>{
-          console.log(res);
-          this.img_url = res.url;
-        },
-        err =>{
-          console.log("err: " + err);
-        } 
-        )
+        //   title: "arnon"
+        // }
+        this.orderService.createFood(this.food)
+        .subscribe(
+          res =>{
+            console.log(res);
+            this.img_url = res.url;
+          },
+          err =>{
+            console.log("err: " + err);
+          } 
+          )
 
+      }
     }
-  }
 
 
 

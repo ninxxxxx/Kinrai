@@ -15,7 +15,7 @@ import 'rxjs/add/operator/map';
 
   	constructor(private http: Http) {
 
-  		this.server = 'http://172.30.230.105:8080/';
+  		this.server = 'http://172.30.230.103:8080/';
   		// this.server = 'http://192.168.1.102:5555/';
 
   	}
@@ -40,6 +40,16 @@ import 'rxjs/add/operator/map';
       let response = this.http.post(url, {food, amount}, options).map(res=> res.json());
       return response;
     }
+
+
+    getCategories(){
+      let url = this.server + 'category';
+      let response = this.http.get(url).map(res => res.json());
+      return response;
+
+    }
+
+
 
     createFood(food){
       let url = this.server + 'newfood';
