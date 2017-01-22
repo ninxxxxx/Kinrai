@@ -65,17 +65,26 @@ console.log(getIpAddress());
 
 // ]
 
-newCategory = function(){
-	cats = [
-	{title: "Main Dish"},
-	{title: "Snack"},
-	{title: "Drink"},
-	{title: "Ice Cream"},
-	];
-	Category.insertMany(cats, function(err){
-		if(err) throw err;
-		console.log("bulk completed");
+newCategory = function(categoryTitle){
+
+	let category = new Category({
+		title: categoryTitle
 	});
+
+	Category.save(err =>{
+		if(err) throw err;
+		console.log("category saved");
+	});      
+	// cats = [
+	// {title: "Main Dish"},
+	// {title: "Snack"},
+	// {title: "Drink"},
+	// {title: "Ice Cream"},
+	// ];
+	// Category.insertMany(cats, function(err){
+	// 	if(err) throw err;
+	// 	console.log("bulk completed");
+	// });
 }
 // newCategory();
 
@@ -103,9 +112,8 @@ newType = (category_id, type) =>{
 
 // c = "587b8f44a4f090e807e28a7e";
 // t = new Type({
-// 	title: "Braised"
+// 	title: "นึ่ง"
 // });
-
 // newType(c, t);
 newFood = (type_id, food) =>{
 	f = new Food(food);
@@ -113,6 +121,7 @@ newFood = (type_id, food) =>{
 		if(err) throw err;
 		f.type = type._id;
 		f.category = type.category;
+		console.log(f.category)
 		type.foods.push(f);
 
 		f.save((err)=>{
@@ -128,12 +137,15 @@ newFood = (type_id, food) =>{
 }
 
 //587b8f73f26b14000aa5c9e5
+//587b9164fea1934819a6fc0f
+//tom 587d1f159308bc881e7fe6cb
+//nung 587d1f3a62591f04202ddcf9
 // ff = new Food({
-// 	title: "Pork Steak",
-// 	price: 249,
-// 	estimate_time: 10,
+// 	title: "ต้มยำกุ้ง",
+// 	price: 990,
+// 	estimate_time: 15,
 // });
-// newFood("587b8f73f26b14000aa5c9e5", ff);
+// newFood("587d1f3a62591f04202ddcf9", ff);
 
 
 
@@ -168,6 +180,132 @@ app.get('/category', (req, res)=>{
 	});
 });
 
+app.post('/category/new', function(req, res){
+
+	let category = new Category({
+		title: req.body.categoryTitle
+	});
+
+
+	category.save(err =>{
+		if(err) throw err;
+		console.log("category saved");
+	}).then(()=>{
+		Category.find({})
+		.populate({path: 'types', populate: {path: 'foods'}})
+		.exec((err, cats)=>{
+			if(err) throw err;
+			res.json(cats);
+		});	
+	});
+	
+});
+
+app.post('/type', (req, res)=>{
+	Category.findById(req.body.categoryId)
+	.populate("types")
+	// .populate({path: 'types', populate: {path: 'foods'}})
+	.exec((err, cat)=>{
+		if(err) throw err;
+		res.json(cat);
+	});
+});
+
+app.post('/type/new', function(req, res){
+	let type = new Type({
+		title: req.body.typeTitle,
+		category: req.body.categoryId
+	});
+	
+	Category.findById(req.body.categoryId)
+	.populate("types")
+	.exec((err, cat)=>{
+		if(err) throw err;
+
+		cat.types.push(type);
+		type.save(err =>{
+			if(err) throw err	
+		}).then(()=>{
+			cat.save(err =>{
+				if(err) throw err	
+				// console.log("category updated");	
+		});
+		});
+		// console.log(cat);	
+		res.json(cat);
+	});
+
+})
+
+app.post('/food', function(req, res){
+
+	Category.findById(req.body.categoryId)
+	.populate({path: 'types', populate: {path: 'foods'}})
+	.exec((err, cat)=>{
+		if(err) throw err;
+		res.json(cat);
+	});	
+
+	
+});
+
+
+
+app.post('/newfood',(req, res)=>{
+	let food = new Food(req.body.food);
+	let image = req.body.image;
+	console.log(food);
+	if(image){
+		console.log("got image");
+		let newPath = __dirname + "/uploads/images/foods/" + image.title;
+		let newData = new Buffer(image.data, "binary");
+		fs.writeFileSync(newPath, newData);
+		food.img_url = "http://" + getIpAddress() + ":8080" + "/uploads/images/foods/" + image.title; 
+	}
+	Type.findById(food.type, (err, type)=>{
+		type.foods.push(food);
+
+		food.save(err =>{
+			if(err) throw err;
+			console.log("food created")
+		}).then(()=>{
+			type.save(err =>{
+				if(err) throw err;
+				console.log("type updated");
+			});
+		});		
+	});
+	
+	// let ip = getIpAddress();
+	// console.log("in new food: " + ip);
+	res.json({typeId: food.type._id});
+}
+);
+
+app.get('/topping', (req, res)=>{
+	Topping.find({}, (err, toppings)=>{
+		if(err) throw err;
+		res.json(toppings);
+	})
+});
+
+app.post('/topping/new', (req, res)=>{
+	let topping = new Topping(req.body.topping);
+	console.log(topping);
+	topping.save((err)=>{
+		if(err) throw err;
+		console.log("new topping was saved");
+	}).then(()=>{
+		Topping.find({}, (err, toppings)=>{
+			if(err) throw err;
+			console.log("send topings back");
+			res.json(toppings);
+		});
+	});
+});
+
+
+
 
 app.get('/uploads/images/foods/:file', function (req, res){
 	file = req.params.file;
@@ -178,17 +316,6 @@ app.get('/uploads/images/foods/:file', function (req, res){
 });
 
 
-app.post('/newfood',(req, res)=>{
-	let food = req.body.food;
-	// console.log(food);
-	let newPath = __dirname + "/uploads/images/foods/" + food.image.title;
-	let newData = new Buffer(food.image.data, "binary");
-	fs.writeFileSync(newPath, newData);
-	// let ip = getIpAddress();
-	// console.log("in new food: " + ip);
-	res.json({url: "http://" + getIpAddress() + ":8080" + "/uploads/images/foods/" + food.image.title});
-}
-);
 
 
 

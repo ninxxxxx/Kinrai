@@ -5,18 +5,20 @@ import { HttpModule } from '@angular/http';
 
 import { MyApp } from './app.component';
 
-//Pages
+//component
 import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
 import { ModalAddOptionComponent } from '../components/modal-add-option/modal-add-option';
 import { ModalAddOrderComponent } from '../components/modal-add-order/modal-add-order';
 import { OrderListComponent } from '../components/order-list/order-list';
-//component
+//Pages
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 import { FoodTypePage } from '../pages/food-type/food-type';
+import { FoodPage } from '../pages/food/food';
 import { ManagementPage } from '../pages/management/management';
 import { OrderMainPage } from '../pages/order-main/order-main';
 import { TabsPage } from '../pages/tabs/tabs';
 import { HomePage } from '../pages/home/home';
+import { ToppingPage } from '../pages/topping/topping';
 
 
 @NgModule({
@@ -28,10 +30,12 @@ import { HomePage } from '../pages/home/home';
   OrderListComponent,
   FoodCategoriesPage,
   FoodTypePage,
+  FoodPage,
   ManagementPage,
   OrderMainPage,
   TabsPage,
   HomePage,
+  ToppingPage
   ],
   imports: [
   IonicModule.forRoot(MyApp)
@@ -45,10 +49,12 @@ import { HomePage } from '../pages/home/home';
   OrderListComponent,
   FoodCategoriesPage,
   FoodTypePage,
+  FoodPage,
   ManagementPage,
   OrderMainPage,
   TabsPage,
   HomePage,
+  ToppingPage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
 })

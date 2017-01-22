@@ -7,7 +7,7 @@
 <ion-header>
 
 	<ion-navbar color="primary">
-		<ion-title>New Option</ion-title>
+		<ion-title>New Topping</ion-title>
 		<ion-buttons end>
 			<button ion-button (click)="cancel()">
 				<ion-icon md="md-close"></ion-icon>
@@ -18,39 +18,42 @@
 </ion-header>
 
 
-<ion-content padding>
-	<ion-grid>
-		<ion-row>
-			<ion-col width-60 >
-				<ion-item>
-					<ion-label color="primary" fixed>Title</ion-label>
-					<ion-input  type="text"></ion-input>
-				</ion-item>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col width-60 >
-				<ion-item>
-					<ion-label color="primary" fixed>Price</ion-label>
-					<ion-input  type="text"></ion-input>
-				</ion-item>
-			</ion-col>
-		</ion-row>
-		<ion-row>
-			<ion-col width-60 >
-				<ion-item>
-					<ion-label color="primary" fixed>Option</ion-label>
-					<ion-input [(ngModel)]="option" type="text"></ion-input>
-				</ion-item>
-			</ion-col>
-			<ion-col width-20>
-				<button ion-button (click)="addOption(option)">Add</button>
-			</ion-col>
-		</ion-row>
-		<ion-row *ngFor="let item of options">
-			<ion-col width-60>{{item}}</ion-col>
-		</ion-row>
-		
-	</ion-grid>
-
+<ion-content>
+	<ion-list style="padding: 16px;">
+		<ion-item style="padding-left: 0px;">
+			<ion-label color="primary" fixed>Topping Title</ion-label>
+			<ion-input  [(ngModel)]="title" type="text"></ion-input>
+		</ion-item>
+	</ion-list>
+	<h2 style="padding-left: 16px;">Top Informations</h2>
+	<ion-list style="padding-right: 16px;">
+		<ion-item>
+			<ion-label color="primary" fixed>Top Title</ion-label>
+			<ion-input [(ngModel)]="option.title" type="text"></ion-input>	
+		</ion-item>
+		<ion-item>
+			<ion-label color="primary" fixed>Price</ion-label>
+			<ion-input [(ngModel)]="option.price" type="text" value="0"></ion-input>	
+		</ion-item>
+		<ion-item>
+			<button ion-button block clear (click)="addOption(option)">Add Top</button>
+		</ion-item>
+		<ion-item *ngFor="let option of options">
+			<h2>{{option.title}}</h2>
+			<h3>{{option.price}}.-</h3>
+			<button ion-button item-right icon-only clear (click)="removeTop(option)">
+				<ion-icon md="md-close"></ion-icon> 
+			</button>
+		</ion-item>
+	</ion-list>
 </ion-content>
+
+<ion-footer>
+	<button ion-button block (click)="newTopping()">save</button>
+</ion-footer>
+
+
+
+
+
+

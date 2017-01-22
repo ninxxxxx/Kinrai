@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams, AlertController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, ModalController, LoadingController, ToastController, Refresher } from 'ionic-angular';
 
 import { OrderService } from '../../providers/order-service';
 import { FoodTypePage } from '../food-type/food-type';
@@ -19,10 +19,14 @@ import { FoodTypePage } from '../food-type/food-type';
     categories: any;
     constructor(
       private orderService: OrderService,
+      public loadCtrl: LoadingController,
+      public toastCtrl: ToastController,
       public navCtrl: NavController, 
-      public alertCtlr: AlertController,
+      public alertCtrl: AlertController,
+      public modalCtrl: ModalController
       ) {
-      // this.getCategories();
+
+
 
       // this.categories = [
       // 	"Main Dish",
@@ -33,6 +37,7 @@ import { FoodTypePage } from '../food-type/food-type';
 
     ngOnInit(){
       this.getCategories();
+      // console.log(this.categories);
     }
 
 
@@ -42,29 +47,43 @@ import { FoodTypePage } from '../food-type/food-type';
       // console.log(this.categories);
       // console.log('Hello FoodsPage Page');
       // this.categories = this.getCategories();
-      // this.openFoodByType("Main Dish");
+      // this.openType("Main Dish");
     }
 
     getCategories(){
-      this.orderService.getCategories().subscribe(
-        res =>{
-          // console.log(res);
-          this.categories = res; 
-          // return res;
-        },
-        err =>{
-          console.log(err);
-        }
-        );
+
+
+      let loading = this.loadCtrl.create({
+        content: "Please wait a minute..."
+      });
+
+      loading.present().then(()=>{
+        this.orderService.getCategories().subscribe(
+          res =>{
+            // console.log(res);
+            this.categories = res;
+            // this.toast("we got all Category"); 
+            // return res;
+          },
+          err =>{
+            console.log(err);
+            this.toast(err);
+          }
+          );
+        loading.dismiss();
+      });
+      
     }
 
-    openFoodByType(category){
-      this.navCtrl.push(FoodTypePage, {category: category});
+    openType(categoryId){
+      // let modal = this.modalCtrl.create(FoodTypePage, {currentCat: category, categories: this.categories});
+      // modal.present();
+      this.navCtrl.push(FoodTypePage, {categoryId: categoryId});
     }
 
 
     openPrompt(){
-      let alert = this.alertCtlr.create({
+      let alert = this.alertCtrl.create({
         title: "New Category",
         inputs: [
         {name: 'title', placeholder: 'Title'}
@@ -77,8 +96,18 @@ import { FoodTypePage } from '../food-type/food-type';
         {
           text: 'save',
           handler: data => {
-            if(data.title)
-              this.categories.push(data.title);
+            this.orderService.newCategory(data.title).subscribe(
+              res =>{
+                console.log(res);
+                this.categories = res;
+                this.toast("New Category created");
+              },
+              err =>{
+                this.toast(err);
+              }
+              );
+            // if(data.title)
+            //   this.categories.push(data.title);
           }
         }
         ]
@@ -86,4 +115,35 @@ import { FoodTypePage } from '../food-type/food-type';
       alert.present();
     }
 
+    toast(messages){
+      let toast = this.toastCtrl.create({
+        message: messages,
+        duration: 3000
+      });
+      toast.present();
+    }
+
+    presentLoading(){
+      let loading = this.loadCtrl.create({
+        content: "Please wait a minute"
+      });
+      loading.present();
+
+      setTimeout(()=>{
+        loading.dismiss();
+      }, 2000);
+
+    }
+
+    doRefresh(refresher){
+      this.getCategories()
+
+      // refresher.complete();
+      // console.log(refresher);
+
+      setTimeout(()=>{
+        refresher.complete();
+      }, 0);
+
+    }
   }

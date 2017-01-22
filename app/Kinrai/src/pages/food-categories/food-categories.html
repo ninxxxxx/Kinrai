@@ -13,11 +13,31 @@
 
 </ion-header>
 
-<ion-content >
-<button ion-button (click)="openPrompt()">New category</button>
-	<ion-list no-lines>
-		<div  *ngFor="let cat of categories">
-			<button ion-item (click)="openFoodByType(cat)">{{cat.title}}</button>
+<ion-content class="card-background-page">
+
+	<ion-refresher (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content refreshingText="Loading...">
+		</ion-refresher-content>
+	</ion-refresher>
+
+	<ion-fab bottom right>
+		<button color="light" ion-fab (click)="openPrompt()">
+			<ion-icon md="md-add"></ion-icon>
+		</button>
+	</ion-fab>
+
+	<ion-card *ngFor="let cat of categories" (click)="openType(cat._id)">
+		<div class="card-title">
+			<h1 style="position:relative;top:50%; transform: translateY(-50%);">
+				{{cat.title}}
+			</h1>
 		</div>
-	</ion-list>
+	</ion-card>
+
+	<!-- <ion-list no-lines>
+		<div  *ngFor="let cat of categories">
+			<button ion-item (click)="openType(cat._id)">{{cat.title}}</button>
+		</div>
+	</ion-list> -->
 </ion-content>
+

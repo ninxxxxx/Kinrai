@@ -49,25 +49,59 @@ import 'rxjs/add/operator/map';
 
     }
 
+    newCategory(categoryTitle){
+      let url = this.server + 'category/new';
+      let response = this.http.post(url, {categoryTitle}).map(res => res.json());
+      return response;
+    }
 
+    getTypes(categoryId){
+      let url = this.server + 'type';
+      let response = this.http.post(url, {categoryId}).map(res => res.json());
+      return response;      
+    }
 
-    createFood(food){
+    newType(typeTitle, categoryId){
+      let url = this.server + 'type/new';
+      let response = this.http.post(url, {typeTitle, categoryId}).map(res => res.json());
+      return response;
+    }
+
+    getAllFoodFromCat(categoryId){
+      let url = this.server + 'food';
+      let response = this.http.post(url, {categoryId}).map(res => res.json());
+      return response; 
+    }
+
+    createFood(food, image){
       let url = this.server + 'newfood';
 
       let header = new Headers({ 'content-type' : 'application/json' });
       let options = new RequestOptions({ headers: header});
 
       // let food = {
-      //   title: "food from app",
-      //   price: 12,
-      //   type: "snack",
-      //   category: "test",
-      //   estTime: 2
-      // }
+        //   title: "food from app",
+        //   price: 12,
+        //   type: "snack",
+        //   category: "test",
+        //   estTime: 2
+        // }
 
-      let response = this.http.post(url, {food}, options).map(res => res.json());
-      // console.log(response);
-      return response;
+        let response = this.http.post(url, {food, image}, options).map(res => res.json());
+        // console.log(response);
+        return response;
+      }
+
+      getTopping(){
+        let url = this.server + 'topping';
+        let response = this.http.get(url).map(res => res.json());
+        return response;
+      }
+
+      newTopping(topping){
+        let url = this.server + 'topping/new';
+        let response = this.http.post(url, {topping}).map(res => res.json());
+        return response; 
+      }
+
     }
-
-  }

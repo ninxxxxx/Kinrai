@@ -1,0 +1,43 @@
+<!--
+  Generated template for the Topping page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+	<ion-navbar color="primary">
+		<ion-title>Topping</ion-title>
+	</ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<ion-fab bottom right>
+		<button color="light" ion-fab (click)="newTopping()">
+			<ion-icon md="md-add"></ion-icon>
+		</button>
+	</ion-fab>
+	<div *ngIf="toppings">
+		<ion-card (click)="setCurrentTopping(topping)" *ngFor="let topping of toppings">
+			<ion-item>
+				<h2>{{topping.title}}</h2>
+				<button *ngIf="topping !== curTopping" ion-button icon-only clear item-right>
+					<ion-icon md="md-arrow-dropdown"></ion-icon>
+				</button>
+				<button *ngIf="topping == curTopping" ion-button icon-only clear item-right>
+					<ion-icon md="md-arrow-dropup"></ion-icon>
+				</button>
+			</ion-item>
+			<div *ngIf="topping == curTopping">
+				<ion-item *ngFor="let top of topping.tops">
+					<div item-left>{{top.title}}</div>
+					<div item-right>{{top.price}}.-</div>
+				</ion-item>
+			</div>
+		</ion-card>
+	</div>
+	<button *ngIf="!toppings" ion-button clear block (click)="newTopping()">Add your topping</button>
+</ion-content>
+

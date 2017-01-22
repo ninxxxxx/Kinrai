@@ -23,12 +23,14 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
     permissions: any;
     img_url: string;
     food: any;
-    curCat: string;
-    selectedCat: string;
-    selectedType: string;
-    
+
     categories: Array<any>;
-    types: Array<string>;
+    currentCategory: any;
+    currentType: any;
+    
+    selectCat: any;
+    selectType: any;
+    image: any;
     options: Array<any>;  
     selectedOptions: Array<any>;
     
@@ -41,125 +43,142 @@ import { ModalAddOptionComponent } from '../modal-add-option/modal-add-option';
       private orderService: OrderService,
       ) 
     {
-      this.categories = this.navParams.get('categories');
-      this.curCat = this.navParams.get('curCat');
-      console.log("curCat: " + this.curCat);
-      this.types = ["ต้ม","ผัด","แกง","ทอด",];
-      this.options = ["ระดับความเผ็ด","ระดับความหวาน","ขนาด"];
-      this.food = {
-        title: "donut", price: 0, estTime: 0, type: "", cat: "", options: "", img_url: "", image: null
-      };
+      
+      this.currentCategory = this.navParams.get('category');
 
-      document.addEventListener('deviceready', ()=>{
-        console.log("Device is Ready: window.Permissions");
-        this.permissions = cordova.plugins.permissions;  
-      });
-    }
+      this.currentType = this.navParams.get('currentType');
+      
+      // let curCatIndex = this.categories.map(cat=>{return cat._id}).indexOf(this.currentType.category);
+      // console.log("index: " + curCatIndex);
 
-    openNewOption(){
-      let modal = this.modalCtrl.create(ModalAddOptionComponent);
-      modal.present();
-    }
-    cancel(){
-      this.viewCtlr.dismiss();
-    }
+      // this.categories.map(cat=>{
+        //   this.
+        // })
 
-    toast(messages){
-      let toast = this.toastCtrl.create({
-        message: messages,
-        duration: 3000
-      });
-      toast.present();
-    }
+        this.food = {
+          title: "",
+          price: 0,
+          type: this.currentType,
+          category: this.currentCategory,
+          estimate_time: 0,
+          img_url: "",
+          ordered_count: 0,
+          toppings: [],
+        };
 
 
+        document.addEventListener('deviceready', ()=>{
+          console.log("Device is Ready: window.Permissions");
+          this.permissions = cordova.plugins.permissions;  
+        });
+      }
 
-    selectImage(){
+      openNewOption(){
+        let modal = this.modalCtrl.create(ModalAddOptionComponent);
+        modal.present();
+      }
 
-      this.permissions.hasPermission(this.permissions.READ_EXTERNAL_STORAGE,
-        status => {
-          if(!status.hasPermission){
-            this.permissions.requestPermission(this.permissions.READ_EXTERNAL_STORAGE,
-              status =>{
-                console.log("status: " + status);
-                if(status.hasPermission){
-                  this.chooseImage();
+      cancel(){
+        this.viewCtlr.dismiss();
+      }
+
+      toast(messages){
+        let toast = this.toastCtrl.create({
+          message: messages,
+          duration: 3000
+        });
+        toast.present();
+      }
+
+      changeCurCat(category){
+        this.currentCategory = category;
+        console.log("cat chanhed");
+      }
+
+
+
+      selectImage(){
+
+        this.permissions.hasPermission(this.permissions.READ_EXTERNAL_STORAGE,
+          status => {
+            if(!status.hasPermission){
+              this.permissions.requestPermission(this.permissions.READ_EXTERNAL_STORAGE,
+                status =>{
+                  console.log("status: " + status);
+                  if(status.hasPermission){
+                    this.chooseImage();
+                  }
+                  // if(!status.hasPermission) errorCallback();
+                },
+                err =>{
+                  console.log("ERROR: " + err);
                 }
-                // if(!status.hasPermission) errorCallback();
-              },
-              err =>{
-                console.log("ERROR: " + err);
-              }
-              );
-          }
-          else{
-            this.chooseImage()
-          }
-        },
-        () => {console.log("PERMISSION ERROR")}
-        )
-    }
-
-    chooseImage(){
-      FileChooser.open()
-      .then(uri => 
-      {
-        // FilePath.resolveNativePath(uri)
-        // .then(filePath => console.log("filePath from FilePath: " + filePath))
-        // .catch(err => console.log(err));
-
-        let uripath = "" + uri;
-
-        window.FilePath.resolveNativePath(uripath,
-          url =>{
-            console.log("FilePath From window.FilePath : " + url);
-            // this.img_url = url;
-            this.extractImage("" + url);
-
+                );
+            }
+            else{
+              this.chooseImage()
+            }
           },
-          err =>{
-            console.log("FUCKING ERROR: " + err);
+          () => {console.log("PERMISSION ERROR")}
+          )
+      }
+
+      chooseImage(){
+        FileChooser.open()
+        .then(uri => 
+        {
+          // FilePath.resolveNativePath(uri)
+          // .then(filePath => console.log("filePath from FilePath: " + filePath))
+          // .catch(err => console.log(err));
+
+          let uripath = "" + uri;
+
+          window.FilePath.resolveNativePath(uripath,
+            url =>{
+              console.log("FilePath From window.FilePath : " + url);
+              this.img_url = url;
+              this.extractImage("" + url);
+
+            },
+            err =>{
+              console.log("FUCKING ERROR: " + err);
+            }
+            );
+        }).catch(e => console.log(e));      
+      }
+
+
+      extractImage(url){
+        let l = url.split("/");
+        let fileName = l[l.length - 1];
+        let path = url.replace(fileName, "");
+        console.log("fileName: " + fileName + "\n" + "path: " + path);
+        File.readAsBinaryString(path, fileName)
+        .then(data =>{
+          this.image = {
+            title: fileName,
+            data: data,
           }
-          );
-      }).catch(e => console.log(e));      
-    }
+        })
+        .catch(err => console.log("ERROR: "+ err));
+      }
 
+      newFood(){
 
-    extractImage(url){
-      let l = url.split("/");
-      let fileName = l[l.length - 1];
-      let path = url.replace(fileName, "");
-      console.log("fileName: " + fileName + "\n" + "path: " + path);
-      File.readAsBinaryString(path, fileName)
-      .then(data =>{
-        this.food.image = {
-          title: fileName,
-          data: data,
-        }
-        this.newFood();
-      })
-      .catch(err => console.log("ERROR: "+ err));
-    }
-
-
-
-
-
-    newFood(){
-      // let food = {
-        //   title: "arnon"
-        // }
-        this.orderService.createFood(this.food)
+        this.orderService.createFood(this.food, this.image)
         .subscribe(
           res =>{
-            console.log(res);
-            this.img_url = res.url;
+            // console.log(res);
+            // this.toast(res.title + "was created");
+            // console.log("new food: " + this.food.type._id);
+            this.viewCtlr.dismiss(this.food.type._id);
+
           },
           err =>{
-            console.log("err: " + err);
+            this.toast(err);
+            this.viewCtlr.dismiss();
           } 
           )
-
       }
     }
 

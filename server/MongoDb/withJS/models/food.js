@@ -7,7 +7,7 @@ var foodSchema = new Schema({
 	type: {type: Schema.Types.ObjectId, ref: 'Type'},
 	category: {type: Schema.Types.ObjectId, ref: 'Category'},
 	estimate_time: {type: Number},
-	img_url: {type: String},
+	img_url: {type: String, default: ""},
 	ordered_count: {type: Number, default: 0},
 	toppings: [{type: Schema.Types.ObjectId, ref: 'Topping'}] 
 });
