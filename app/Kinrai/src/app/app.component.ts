@@ -12,7 +12,7 @@ import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage = FoodCategoriesPage;
+  rootPage = TabsPage;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
   @ViewChild(Nav) nav: Nav;
   constructor(platform: Platform) {

@@ -67,9 +67,10 @@ import { ModalAddOptionComponent } from '../../components/modal-add-option/modal
   		let modal = this.modalCtrl.create(ModalAddOptionComponent)
   		modal.onDidDismiss(toppings=>{
   			console.log(toppings);
-  			this.toppings = toppings;
+  			if(toppings)
+  				this.toppings = toppings;
   		})
-  		modal.present()
+  		modal.present();
 
   	}
 

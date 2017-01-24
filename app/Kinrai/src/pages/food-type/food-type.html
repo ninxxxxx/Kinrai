@@ -22,9 +22,9 @@
 			<ion-icon md="md-add"></ion-icon>
 		</button>
 	</ion-fab>
-	<ion-list no-lines>
-		<button block class="button-item" ion-item *ngFor="let type of category.types" (click)="openFood(type._id)">
-			{{type.title}}
+	<ion-list>
+		<button block class="button-item" style="text-align: center; padding-right: 0px; padding-left: 0px;" ion-item *ngFor="let type of category.types" (click)="openFood(type._id)">
+			<h2>{{type.title}}</h2>
 		</button>
 	</ion-list>
 </ion-content>

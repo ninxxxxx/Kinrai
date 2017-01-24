@@ -20,6 +20,7 @@
 
 <ion-content >
 	<!-- {{img_url}} -->
+	{{food.toppings|json}}
 	<ion-list class="field-list">
 		<ion-item *ngIf="img_url">
 			<img [src]="img_url">
@@ -64,10 +65,11 @@
 				<ion-option *ngFor="let type of currentCategory.types" [value]="type">{{type.title}}</ion-option>
 			</ion-select>
 		</ion-item>
+		
 		<ion-item>
-			<ion-label color="primary" stacked>Options</ion-label>
-			<ion-select [(ngModel)]="selectedOptions" multiple="true">
-				<ion-option *ngFor="let item of options" [value]="item">{{item}}</ion-option>
+			<ion-label color="primary" stacked>Toppings</ion-label>
+			<ion-select [(ngModel)]="food.toppings" multiple="true">
+				<ion-option *ngFor="let topping of toppings" [value]="topping">{{topping.title}}</ion-option>
 			</ion-select>
 		</ion-item>
 		<ion-item *ngIf="selectedOptions">

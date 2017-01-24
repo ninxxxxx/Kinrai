@@ -141,14 +141,16 @@ import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add
           category: this.category,
           currentType: this.category.types[this.slides.getActiveIndex()]
         });
-      modal.present();
       modal.onDidDismiss(typeId =>{
-        this.typeId = typeId;
-        this.getCategory(this.categoryId);
+        if(typeId){
+          this.typeId = typeId;
+          this.getCategory(this.categoryId);
+        }
         // this.typeId = typeId;
         // this.typeIndex 
         // this.events.push(event);
       });
+      modal.present();
     }
 
     openTopping(){
@@ -156,7 +158,7 @@ import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add
     }
 
 
-//=============Utilities=============
+    //=============Utilities=============
 
     toast(messages){
       let toast = this.toastCtrl.create({
