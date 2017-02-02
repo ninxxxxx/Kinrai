@@ -1,12 +1,14 @@
 var express = require("express");
+var app = express();
+var server = require('http').Server(app);
+var io = require("socket.io")(server);
+
 var fs = require("fs");
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
-
 var os = require('os');
 var ifaces = os.networkInterfaces();
 
-var app = express();
 
 
 var Bill = require("./models/bill");
@@ -53,17 +55,36 @@ getIpAddress = function(){
 
 console.log(getIpAddress());
 
+// var server = app.listen(8080);
+// console.log("App listening on port 8080");
+// ===========================================================
+
+// ======================Socket part =========================
 
 
-// foods = [
-// {
-// 	title: "ข้าวไข่ดาว",
-// 	price: 30,
-// 	estimate_time: 5,
-// }
+io.on('connection', function(socket){
+	console.log("user connected");
+	socket.on('hello', function(msgs){
+		console.log(msgs);
+		io.emit('hello', "Did you said " + msgs + " ?");
+	});
+
+	socket.on('orders changed', function(msgs){
+		console.log("orders changed");
+		io.emit('orders changed', "...");
+	});
+});
+
+server.listen(8080);
 
 
-// ]
+
+
+
+
+// ===========================================================
+
+
 
 newCategory = function(categoryTitle){
 
@@ -172,10 +193,22 @@ newFood = (type_id, food) =>{
 
 app.get('/category', (req, res)=>{
 	// getCats();
-	Category.find({})
-	.populate({path: 'types', populate: {path: 'foods'}})
-	.exec((err, cats)=>{
+	Category.find({}, (err, cats)=>{
 		if(err) throw err;
+		res.json(cats);
+	});
+	
+});
+
+app.get('/category/getfull', (req, res)=>{
+	// getCats();
+	Category.find({types:{$exists: true, $ne: []}})
+	.populate({
+		path: 'types', 
+		match: {foods:{$exists: true, $ne:[]}},
+		populate: {path: 'foods', populate: {path: 'toppings'}}
+	}).exec((err, cats)=>{
+		// console.log(cats);
 		res.json(cats);
 	});
 });
@@ -198,7 +231,7 @@ app.post('/category/new', function(req, res){
 			res.json(cats);
 		});	
 	});
-	
+
 });
 
 app.post('/type', (req, res)=>{
@@ -216,7 +249,7 @@ app.post('/type/new', function(req, res){
 		title: req.body.typeTitle,
 		category: req.body.categoryId
 	});
-	
+
 	Category.findById(req.body.categoryId)
 	.populate("types")
 	.exec((err, cat)=>{
@@ -245,11 +278,22 @@ app.post('/food', function(req, res){
 		if(err) throw err;
 		res.json(cat);
 	});	
-
-	
 });
 
-
+app.post('/food/getById', function(req, res){
+	console.log("bababa");
+	foodId = req.body.foodId;
+	console.log(foodId);
+		// res.json(foodId);
+		Food.findById(foodId)
+		.populate('type', 'title')
+		.populate('category', 'title')
+		.populate('toppings')
+		.exec((err, food) =>{
+			if(err) throw err;
+			res.json(food);
+		});
+	});
 
 app.post('/newfood',(req, res)=>{
 	let food = new Food(req.body.food);
@@ -269,55 +313,100 @@ app.post('/newfood',(req, res)=>{
 			if(err) throw err;
 			console.log("food created")
 		}).then(()=>{
+			if(err) throw err;
 			type.save(err =>{
 				if(err) throw err;
 				console.log("type updated");
 			});
-		});		
-	});
-	
+		});
+	});		
+	res.json({typeId: food.type._id});
+});
+// });
+
 	// let ip = getIpAddress();
 	// console.log("in new food: " + ip);
-	res.json({typeId: food.type._id});
-}
-);
 
-app.get('/topping', (req, res)=>{
-	Topping.find({}, (err, toppings)=>{
-		if(err) throw err;
-		res.json(toppings);
-	})
-});
+	app.get('/topping', (req, res)=>{
 
-app.post('/topping/new', (req, res)=>{
-	let topping = new Topping(req.body.topping);
-	console.log(topping);
-	topping.save((err)=>{
-		if(err) throw err;
-		console.log("new topping was saved");
-	}).then(()=>{
 		Topping.find({}, (err, toppings)=>{
+
 			if(err) throw err;
-			console.log("send topings back");
 			res.json(toppings);
+			// type.save(err =>{
+			// });
 		});
 	});
-});
+
+	app.post('/topping/new', (req, res)=>{
+		let topping = new Topping(req.body.topping);
+		console.log(topping);
+		topping.save((err)=>{
+			if(err) throw err;
+			console.log("new topping was saved");
+		}).then(()=>{
+			Topping.find({}, (err, toppings)=>{
+				if(err) throw err;
+				console.log("send topings back");
+				res.json(toppings);
+			});
+		});
+	});
 
 
 
 
-app.get('/uploads/images/foods/:file', function (req, res){
-	file = req.params.file;
-	var img = fs.readFileSync(__dirname + "/uploads/images/foods/" + file);
-	res.writeHead(200, {'Content-Type': 'image/jpg' });
-	res.end(img, 'binary');
 
-});
+	app.get('/uploads/images/foods/:file', function (req, res){
+		file = req.params.file;
+		var img = fs.readFileSync(__dirname + "/uploads/images/foods/" + file);
+		res.writeHead(200, {'Content-Type': 'image/jpg' });
+		res.end(img, 'binary');
 
-
-
+	});
 
 
-app.listen(8080);
-console.log("App listening on port 8080");
+	app.post('/bill/new', function(req, res){
+		let rawBill = req.body.bill;
+		let bill = new Bill();
+		let date = new Date();
+		date.setHours(date.getHours() + 7);
+		bill.total_price = rawBill.total_price;
+		bill.table_number = rawBill.table_number;
+		bill.date = date;
+		rawBill.orders.forEach(function(order){
+			let o = new Order(order);
+			o.date = date;
+			bill.orders.push(o);
+			o.save((err)=>{
+				if(err) throw err;
+			});
+		})
+		console.log(bill);
+		bill.save((err)=>{
+			if(err) throw err;
+		})		
+		res.json("Bill was created")
+	});
+
+	app.get('/orders/:status', function(req, res){
+		let status = req.params.status;
+		Order.find({status: status}).populate('food').exec(
+			(err, orders)=>{
+				if(err) throw err;
+				res.json(orders);
+			});
+	});
+
+
+	// testAdd = function(){
+	// 	Category.find({types:{$exists: true, $ne: []}})
+	// 	.populate({path: 'types', populate: {path: 'foods', $exists: true, $ne: [], populate: {path: 'toppings'}}})
+	// 	.exec((err, cats)=>{
+	// 		console.log(cats);
+	// 	})
+	// }
+// testAdd();
+
+
+

@@ -8,10 +8,12 @@
 			<button color="jaa" ion-button clear item-right (click)="openTopping()">manage toppings</button>
 		</ion-buttons>
 	</ion-navbar>
+	
 	<ion-toolbar color="primary">
 		<button color="light" ion-button block outline (click)="selectType()">{{currentType}}</button>
 	</ion-toolbar>
 </ion-header>
+
 <ion-content >
 	<ion-refresher (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content refreshingText="Loading...">

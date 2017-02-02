@@ -7,7 +7,7 @@
 <ion-header>
 	<ion-navbar color="primary">
 		<ion-title >
-			Add Queue
+			Add Order
 		</ion-title>
 		<ion-buttons end>
 			<button ion-button (click)="cancel()">
@@ -19,18 +19,82 @@
 
 
 <ion-content padding>
-	<ion-list>
-		<ion-item>
-			<ion-label>title</ion-label>
-			<ion-input></ion-input>
-		</ion-item>
-		<ion-item>
-			<ion-label>f</ion-label>
-			<ion-input></ion-input>
-		</ion-item>
-		<ion-item>
-			<ion-label>title</ion-label>
-			<ion-input></ion-input>
-		</ion-item>
-	</ion-list>
+	<!-- {{food|json}} -->
+	<!-- <div style="text-align: center;">
+		<button *ngIf="!food.title" color="light" style="padding-right: 16px; padding-left: 16px;" ion-button clear (click)="chooseFood()">Select Food</button>
+		<button *ngIf="food.title" color="light" style="padding-right: 16px; padding-left: 16px;" ion-button clear (click)="chooseFood()">Change Food</button>
+	</div>
+-->
+
+<ion-list [hidden]="!food.title">
+
+	<ion-item class="left-out">
+		<h1>{{food.title}}</h1>
+		<button *ngIf="food.title" color="primary" style="margin-left: 0px; padding-left: 0px; padding-right: 0px;" ion-button clear (click)="chooseFood()">Change Food</button>
+	</ion-item>
+	<ion-item class="left-out">
+		<ion-grid>
+			<ion-row>
+				<ion-col>
+					<h2>Category: {{food.category.title}}</h2>
+					<h2>Type: {{food.type.title}}</h2>		
+					<h2>Waiting Time: {{food.estimate_time}}</h2>		
+				</ion-col>
+				<ion-col style="text-align: center;">
+					<h2>Price</h2>
+					<h1>{{food.price}}.-</h1>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+					<ion-col>
+						<h2>Toppings</h2>
+						<h2 *ngFor="let topping of toppings">{{topping.title}} : {{topping.optionTitle}}, {{topping.price}}.-</h2>
+					</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-item>
+	<ion-item class="left-out" (click)="toggleToppings()">
+		<!-- {{toppings|json}} -->
+		<h1>Toppings</h1>
+		<div item-right>
+			<ion-icon *ngIf="!isToggle" md="md-arrow-dropdown"></ion-icon>
+			<ion-icon *ngIf="isToggle" md="md-arrow-dropup"></ion-icon>
+		</div>
+	</ion-item>
+	<ion-grid *ngIf="isToggle">
+
+		<div *ngFor="let topping of food.toppings; let i=index; ">
+			<ion-row>
+				<h6>{{topping.title}}</h6>
+			</ion-row>
+			<ion-row radio-group style="padding-top: 0px; text-align: center;" >
+				<ion-col style="align-content: center;" *ngFor="let top of topping.tops; let j=index; ">
+					<ion-label class="remove-margin-top">{{top.title}} ({{top.price}}.-) </ion-label>
+					<ion-radio (ionSelect)="addInTo(topping, top)"></ion-radio>
+				</ion-col>
+			</ion-row>
+		</div>
+	</ion-grid>
+</ion-list>
 </ion-content>
+<ion-footer>
+	<ion-grid>
+		<ion-row >
+			<ion-col style="text-align: center; padding-bottom: 0px; padding-left: 5px;">
+				<ion-item>
+					<ion-label inline style="font-size: 2.6rem;" >Amount: </ion-label>
+					<ion-input clearOnEdit="true" style="font-size: 2.6rem;" [(ngModel)]="amount" ></ion-input>	
+				</ion-item>
+			</ion-col>
+			<ion-col style="text-align: center; padding-bottom: 0px;">
+				<h1 style="margin-bottom: 0px; margin-top: 13px;">Total: {{amount * total}} .-</h1>
+			</ion-col>			
+		</ion-row>
+		<ion-row>
+			<ion-col width-10></ion-col>
+			<ion-col width-80><button item-right ion-button block (click)="gotoOrderSummary()">Next</button></ion-col>
+			<ion-col width-10></ion-col>
+			
+		</ion-row>
+	</ion-grid>
+</ion-footer>

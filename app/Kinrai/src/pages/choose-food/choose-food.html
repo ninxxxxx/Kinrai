@@ -1,0 +1,36 @@
+<!--
+  Generated template for the ChooseFood page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+	<ion-navbar color="primary">
+		<ion-title>please select food</ion-title>
+		<ion-buttons end>
+			<button color="jaa" ion-button item-right icon-only (click)="cancel()">
+				<ion-icon md="md-close"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
+	<ion-toolbar color="primary">
+		<button color="light" ion-button outline block (click)="selectCategory()">{{curCategory.title}}</button> 
+		<button color="light" ion-button outline block (click)="selectType()">{{curType.title}}</button> 
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<!-- {{curCategory|json}} -->
+	<ion-card *ngFor="let food of curType.foods" (click)="choose(food._id)">
+		<ion-item>
+			<ion-thumbnail item-left>
+				<img [src]="food.img_url">
+			</ion-thumbnail>
+			<h1>{{food.title}}</h1>
+			<h2>wait for: {{food.estimate_time}} mins</h2>
+			<h2>price: {{food.price}}.-</h2>
+			<!-- <button ion-button clear item-right>edit</button> -->
+		</ion-item>
+	</ion-card>
+</ion-content>
