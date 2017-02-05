@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var toppingSchema = new Schema({
 	title: {type: String, required: true},
-	 tops: [{title: String, price: Number}],
+	 tops: [{title: String, price: {type: Number, default: 0}}],
 });
 
 // foodSchema.methods.getPrice = function(){

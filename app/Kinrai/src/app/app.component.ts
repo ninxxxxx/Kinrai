@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, Nav } from 'ionic-angular';
+import { Platform, Nav, Tabs } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { TabsPage } from '../pages/tabs/tabs';
@@ -14,6 +14,7 @@ import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 export class MyApp {
   rootPage = TabsPage;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
+
   @ViewChild(Nav) nav: Nav;
   constructor(platform: Platform) {
     platform.ready().then(() => {
@@ -36,8 +37,10 @@ export class MyApp {
       ]
     }
     ];
+
   }
   openPage(page){
     this.nav.push(page);
   }
+
 }

@@ -15,11 +15,11 @@ import 'rxjs/add/operator/map';
 
   	constructor(private http: Http) {
 
-      // this.server = 'http://172.30.230.103:8080/';//lan
+      this.server = 'http://172.30.230.103:8080/';//lan
       // this.server = 'http://172.30.88.77:8080/'; //psu802
       // this.server = 'http://172.30.80.115:8080/';
       // this.server = 'http://172.30.80.103:8080/';
-      this.server = 'http://172.30.80.25:8080/'; //coe
+      // this.server = 'http://172.30.80.25:8080/'; //coe
       // this.server = 'http://192.168.1.102:5555/';
 
     }
@@ -93,12 +93,21 @@ import 'rxjs/add/operator/map';
       return response; 
     }
 
-    getOrders(status){
+    getOrders(){
       // let url = 'http://localhost:5555/foods';
-      let url = this.server + 'orders/' + status;
+      let url = this.server + 'orders/';
       console.log(url);
       // let url = 'http://192.168.43.252:5555/foods';
       let response = this.http.get(url).map(res => res.json());
+      return response;
+    }
+
+    getOrderByFilter(chosenCats){
+      // let url = 'http://localhost:5555/foods';
+      let url = this.server + 'orders/findbycategories';
+      console.log(url);
+      // let url = 'http://192.168.43.252:5555/foods';
+      let response = this.http.post(url, {chosenCats}).map(res => res.json());
       return response;
     }
 
@@ -111,6 +120,13 @@ import 'rxjs/add/operator/map';
       let amount = 2;
 
       let response = this.http.post(url, {food, amount}, options).map(res=> res.json());
+      return response;
+    }
+
+    changeOrderStatus(order_id, status){
+      let url = this.server + 'order/' + order_id + "/changestatus/" + status;
+      // console.log(url);
+      let response = this.http.get(url).map(res => res.json());
       return response;
     }
 

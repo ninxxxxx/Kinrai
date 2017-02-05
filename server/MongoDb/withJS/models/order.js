@@ -3,15 +3,15 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var orderSchema = new Schema({
-	// bill_number: {type: Number},
-	wait_time: {type: Number, default: 0},
+	bill: {type: mongoose.Schema.Types.ObjectId, ref: 'Bill'},
+	togo: {type: Boolean, default: false},
+	// wait_time: {type: Number, default: 0},
 	food: {type: mongoose.Schema.Types.ObjectId, ref: 'Food'},
 	amount: {type: Number, default: 1},
 	date: {type: Date, default: Date.now},
 	selected_toppings: [{title: String, optionTitle: String, price: Number}],
 	price: {type: Number},
 	status: {type: String, default: "waiting"}
-
 });
 
 orderSchema.methods.setOrderPrice = function(){

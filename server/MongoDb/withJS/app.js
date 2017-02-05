@@ -370,43 +370,110 @@ app.post('/newfood',(req, res)=>{
 		let rawBill = req.body.bill;
 		let bill = new Bill();
 		let date = new Date();
-		date.setHours(date.getHours() + 7);
+		// date.setHours(date.getHours());
+
 		bill.total_price = rawBill.total_price;
 		bill.table_number = rawBill.table_number;
 		bill.date = date;
-		rawBill.orders.forEach(function(order){
-			let o = new Order(order);
-			o.date = date;
-			bill.orders.push(o);
-			o.save((err)=>{
-				if(err) throw err;
-			});
-		})
-		console.log(bill);
-		bill.save((err)=>{
+		
+		bill.bill_number = ""+date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear()+"-";
+
+
+		dateForFind = new Date();
+		dateForFind.setHours(dateForFind.getHours() - 7);
+		dateForFind.setMinutes(0);
+		dateForFind.setSeconds(0);
+		console.log("DateForFind " + dateForFind);
+		Bill.find({date: {$gt: dateForFind}}, function(err, bills){
 			if(err) throw err;
-		})		
+
+			console.log("bills.length: " + bills.length);
+			console.log(bills);
+			//check if exist billNumber 
+			if(bills.length != 0){
+				let lst = bills[bills.length-1].bill_number.split("-");
+				console.log("last index: " + lst[lst.length - 1]);
+				let no = parseInt(lst[lst.length - 1]) + 1;
+				console.log("No." + no);
+				if(no == bills.length){
+					no += 1;
+				}
+				bill.bill_number += no;
+			}else{
+				bill.bill_number += 1;
+			}
+
+			rawBill.orders.forEach(function(order){
+				let o = new Order(order);
+				o.date = date;
+				o.bill = bill;
+				bill.orders.push(o);
+				o.save((err)=>{
+					if(err) throw err;
+				});
+			})
+			console.log(bill);
+			bill.save((err)=>{
+				if(err) throw err;
+			})
+		});
 		res.json("Bill was created")
 	});
 
-	app.get('/orders/:status', function(req, res){
-		let status = req.params.status;
-		Order.find({status: status}).populate('food').exec(
+
+	app.get('/orders/', function(req, res){
+		// Order.find({ $or:[{status: "waiting"}, {status: "doing"}] }).populate('food').populate('bill').exec(
+		Order.find({ status:{$in:["waiting", "doing"]} }).populate('food').populate('bill').exec(
+			(err, orders)=>{
+				if(err) throw err;
+				// console.log(orders);
+				res.json(orders);
+			});
+	});
+
+	app.post('/orders/findbycategories/', function(req, res){
+		let chosenCats = req.body.chosenCats;
+		console.log(chosenCats);
+		// chosenCats.map(cat =>{ cat = new });
+		Order.find({ status:{$in:["waiting", "doing"]} })
+		.populate({
+			path:'food',
+			populate:{
+				path:'category',
+				match:{
+					_id:{
+						$in:chosenCats
+					},
+
+				}
+			}
+		})
+		.populate('bill')
+		.exec(
 			(err, orders)=>{
 				if(err) throw err;
 				res.json(orders);
 			});
 	});
 
+	app.get('/order/:order_id/changestatus/:status', function(req, res){
+		let status = req.params.status;
+		let order_id = req.params.order_id;
+		Order.findById(order_id,function(err, order){
+			if(err) throw err;
+			order.status = status;
 
-	// testAdd = function(){
-	// 	Category.find({types:{$exists: true, $ne: []}})
-	// 	.populate({path: 'types', populate: {path: 'foods', $exists: true, $ne: [], populate: {path: 'toppings'}}})
-	// 	.exec((err, cats)=>{
-	// 		console.log(cats);
-	// 	})
-	// }
+			order.save(function(err){
+				if(err) throw err;
+			});
+			res.json("status was changed");
+		});
+	});
+
+// 	testAdd = function(){
+// 		Order.find({'food.category.title':'Main Dish'}, function(err, orders){
+// 			if(err) throw err;
+// 			console.log(orders);
+// 		})
+// 	}
 // testAdd();
-
-
-

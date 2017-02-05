@@ -76,37 +76,39 @@ export class OrderSummaryPage {
 				this.toast(err);
 			}
 			);
-		this.socket.emit("orders changed", "...");
-		this.viewCtrl.dismiss();
+		setTimeout(()=>{
+			this.socket.emit("orders changed", "...");
+			this.viewCtrl.dismiss();
+		},1000);
 	}
 
 	toast(messages){
-      let toast = this.toastCtrl.create({
-        message: messages,
+		let toast = this.toastCtrl.create({
+			message: messages,
 
-        duration: 3000
-      });
-      toast.present();
-    }
+			duration: 3000
+		});
+		toast.present();
+	}
 
-    calWaitTime(){
-    	this.orders.map(order =>{
-    		this.totalWaitTime += order.food.estimate_time;
-    	});
-    }
-    calTotalPrice(){
-    	this.totalPrice = 0;
-    	this.orders.map(order =>{
-    		this.totalPrice += (order.price*order.amount);
-    	});
-    }
+	calWaitTime(){
+		this.orders.map(order =>{
+			this.totalWaitTime += order.food.estimate_time;
+		});
+	}
+	calTotalPrice(){
+		this.totalPrice = 0;
+		this.orders.map(order =>{
+			this.totalPrice += (order.price*order.amount);
+		});
+	}
 
-    editOrder(order){
-    	let modal = this.modalCtrl.create(ModalAddOrderComponent,{order});
-    	modal.onDidDismiss(order =>{
-    		console.log("==>");
-    		console.log(order);
-    	});
-    	modal.present();
-    }
+	editOrder(order){
+		let modal = this.modalCtrl.create(ModalAddOrderComponent,{order});
+		modal.onDidDismiss(order =>{
+			console.log("==>");
+			console.log(order);
+		});
+		modal.present();
+	}
 }

@@ -9,28 +9,50 @@
   </ion-navbar>
 
   <ion-toolbar color="primary">
-    <ion-segment [(ngModel)]="status" color="jaa" (ionChange)="getOrder(status)">
-      <ion-segment-button value="waiting">
-        waiting
-      </ion-segment-button>
-      <ion-segment-button value="doing">
-        doing
-      </ion-segment-button>
-      <ion-segment-button value="done">
-        done
-      </ion-segment-button>
-    </ion-segment>
+    <button color="light" ion-button outline block (click)="chooseCats()">{{chosenCatsTxt}}</button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let order of orders">
-    <ion-item>
-    <h2 item-left>{{order.wait_time}}</h2>
-        <h2>{{order.food.title}}</h2>
+<!-- {{chosenCats|json}} -->
+  <ion-item [hidden]="true">
+  <ion-label>Select Category</ion-label>
+    <ion-select (ionChange)="getOrderByFilter()" [(ngModel)]="chosenCats" #catsSelect multiple="true" okText="save" cancelText="cancel">
+      <ion-option *ngFor="let cat of categories" [value]="cat">{{cat.title}}</ion-option>
+    </ion-select>
+  </ion-item>
+  <!-- {{orders|json}} -->
+  <ion-list>
+    <ion-item style="padding-left: 0px;" *ngFor="let order of orders">
+      <ion-grid style="margin-left: 8px;">
+        <ion-row>
+          <ion-col><h1>{{order.food.title}}</h1></ion-col>
+          <ion-col style="text-align: right;">
+            <h3>Table No.{{order.bill.table_number}}</h3>
+            <h5>{{order.bill.bill_number}}</h5>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <h2>Place: {{order.togo ? "To Go" : "For Here"}}</h2>
+            <h2></h2>
+            <h2>Amount: {{order.amount}}</h2>
+            <h2>Special Details</h2>
+            <!-- {{order.selected_toppings|json}} -->
+            <h2 *ngIf="order.selected_toppings.length == 0">none</h2>
+            <h2 *ngFor="let topping of order.selected_toppings">-{{topping.title}}: {{topping.optionTitle}}</h2>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <!-- <button>Out of stock</button> -->
+            <button (click)="changeOrderStatus(order._id, 'doing')" [hidden]="order.status != 'waiting'" block round outline ion-button>Waiting</button>
+            <button (click)="setDone(order._id)" [hidden]="order.status != 'doing'" block round ion-button outline color="light">Doing...</button>
+            <button (click)="changeOrderStatus(order._id, 'waiting')" [hidden]="order.status != 'done'" block round ion-button>Done in ... {{countdown}}</button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
-  </ion-card>
-  <!-- <h2 *ngFor="let order of orders">{{order.food.title}}</h2> -->
-  <!-- <button ion-button (click)="emitHello()">send</button>  -->
+  </ion-list>
 
 </ion-content>

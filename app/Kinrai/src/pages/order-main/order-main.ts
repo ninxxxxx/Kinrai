@@ -1,5 +1,5 @@
-import { Component, NgZone } from '@angular/core';
-import { ToastController, NavController, NavParams, ModalController, ViewController } from 'ionic-angular';
+import { Component, NgZone, ViewChild } from '@angular/core';
+import { ToastController, NavController, NavParams, ModalController, ViewController, Select } from 'ionic-angular';
 
 
 
@@ -19,17 +19,22 @@ declare var cordova:any;
 })
 export class OrderMainPage {
 
+  @ViewChild('catsSelect') catsSelect: Select; 
   isRe:boolean = false;
   isToggle:boolean = true;
-  countt: number;
-  prevQueue:any;
-  queues:any;
+
+  categories: any;
+  chosenCats: any;
+  chosenCatsTxt: string;
+
+  counter:any;
+  countdown: number;
 
   status: any;
   orders: any;
 
-  totalWaitTime:number = 0;
   socket: any;
+
   constructor(
     private zone: NgZone,
     private orderService: OrderService,
@@ -38,39 +43,55 @@ export class OrderMainPage {
     public modalCtrl: ModalController, 
     public viewCtrl: ViewController
     ) {
+
+    this.categories = [];
+    this.chosenCats = [];
+    this.chosenCatsTxt = "All Category";
+    this.countdown = 5;
     this.status = "waiting";   
     this.orders = [];
-    this.getOrder(this.status);
-    this.countDown(); 
+
+    this.getFullCategories();
+    this.getOrders();
+    // this.countDown();
+
+
+
+
 
     // =======================================================================
+
     this.socket = io(this.orderService.server);
-    // this.socket.emit('hello', "...");
-    this.socket.on('hello', (msgs)=>{
-      this.zone.run(()=>{
-        this.toast("Messages: " + msgs);
-      });
-    });
     this.socket.on('orders changed', (msgs)=>{
-      this.getOrder(this.status);
+      console.log("orders has changed");
+      this.getOrders();
       // this.zone.run(()=>{
-        //     this.toast("Messages: " + msgs);
-        //   });
+        //       this.toast("Messages: " + msgs);
+        //     });
       });
   }
-
-
 
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad OrderMainPage');
+    // console.log('ionViewDidLoad OrderMainPage');
   }
 
-  getOrder(status){
-    this.orderService.getOrders(status).subscribe(
+
+  getFullCategories(){
+    this.orderService.getFullCategories().subscribe(
+      res =>{
+        this.categories = res;
+      },
+      err =>{
+        console.log(err);
+      }
+      );
+  }
+
+  getOrders(){
+    this.orderService.getOrders().subscribe(
       res =>{
         this.orders = res;
-        this.countDown();
       },
       err =>{
         this.toast(err);
@@ -103,47 +124,73 @@ export class OrderMainPage {
     toast.present();
   }
 
-  changeWT(value: number){
-    this.totalWaitTime = value;
+  setDone(order_id){
+    let indx = this.orders.map(order =>{ return order._id}).indexOf(order_id);
+    this.orders[indx].status = 'done';
+    this.counter = setInterval(()=>{
+      this.countdown--;
+      if(this.countdown == 0){
+        this.countdown = 5;
+        clearInterval(this.counter);
+        this.changeOrderStatus(order_id, 'done');
+      } 
+    }, 1000)
   }
 
-  countDown(){
-    let totalTime = 0;
-    let now = new Date();
-    if(this.orders){
-      this.orders.forEach(order =>{
-        let createTime = new Date(order.date);
-        // let diffHours = now.getHours() - createTime.getHours() - 7;
-        let diffMins = now.getMinutes() - createTime.getMinutes();
-        totalTime += order.food.estimate_time;
-        // console.log(diffHours);
-        console.log(diffMins);
-        console.log(totalTime);
-
-        order.wait_time = totalTime - diffMins;
-        if(order.wait_time < 0) {
-          totalTime -= order.food.estimate_time;
-          order.wait_time = 0;
-        }
-      });
+  changeOrderStatus(order_id, status){
+    if(status == "waiting"){
+      this.countdown = 5;
+      clearInterval(this.counter);
     }
-    setInterval(()=>{
-      let totalTime = 0;
-      let now = new Date();
-      if(this.orders){
-        this.orders.forEach(order =>{
-          let createTime = new Date(order.date);
-          // let diffHours = now.getHours() - createTime.getHours() - 7;
-          let diffMins = now.getMinutes() - createTime.getMinutes();
-          totalTime += order.food.estimate_time;
-          // console.log(diffHours);
-          console.log(diffMins);
-          console.log(totalTime);
+    this.orderService.changeOrderStatus(order_id, status).subscribe(
+      res =>{
+        // this.toast(res);
+        console.log(res);
+        setTimeout(()=>{
+          this.socket.emit('orders changed', "some order's status has changed.");
+        }, 500);
+      },
+      err =>{
+        this.toast(err);
+      }
+      );
+  }
 
-          order.wait_time = totalTime - diffMins;
-          if(order.wait_time < 0) order.wait_time = 0;
+  chooseCats(){
+    // this.getFullCategories();
+    this.catsSelect.open();
+  }
+
+  getOrderByFilter(){
+    this.chosenCatsTxt = "";
+    console.log(this.chosenCats.length +" "+ this.categories.length);
+    if(this.chosenCats.length != this.categories.length){
+      if(this.chosenCats.length == 1)
+        this.chosenCatsTxt = this.chosenCats[0].title;
+      else{
+        this.chosenCats.map(cat =>{
+          this.chosenCatsTxt += cat.title + " ";
         });
       }
-    }, 60000);
+    }else{
+      this.chosenCatsTxt = "All Category";
+    }
+
+    let chosenCatsId = []; 
+    this.chosenCats.forEach(cat =>{ chosenCatsId.push(cat._id)});
+
+    this.orderService.getOrderByFilter(chosenCatsId).subscribe(
+      orders =>{
+        console.log(orders); 
+        this.orders = []
+        orders.map(order=>{
+          if(order.food.category)
+            this.orders.push(order);
+        });
+      },
+      err =>{
+        console.log(err);
+      }
+      )
   }
 }

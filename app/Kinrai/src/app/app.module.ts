@@ -21,6 +21,7 @@ import { HomePage } from '../pages/home/home';
 import { ToppingPage } from '../pages/topping/topping';
 import { ChooseFoodPage } from '../pages/choose-food/choose-food';
 import { OrderSummaryPage } from '../pages/order-summary/order-summary';
+import { BillPage } from '../pages/bill/bill';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { OrderSummaryPage } from '../pages/order-summary/order-summary';
   HomePage,
   ToppingPage,
   ChooseFoodPage,
-  OrderSummaryPage
+  OrderSummaryPage,
+  BillPage
   ],
   imports: [
   IonicModule.forRoot(MyApp)
@@ -60,7 +62,8 @@ import { OrderSummaryPage } from '../pages/order-summary/order-summary';
   HomePage,
   ToppingPage,
   ChooseFoodPage,
-  OrderSummaryPage
+  OrderSummaryPage,
+  BillPage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
 })

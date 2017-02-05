@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var billSchema = new Schema({
-	// bill_number: {type: String},
+	bill_number: {type: String},
 	date: {type: Date, default: Date.now},
 	table_number: {type: String},
 	orders: [{type: Schema.Types.ObjectId, ref:'Order'}],
