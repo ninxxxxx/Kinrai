@@ -86,7 +86,7 @@ export class OrderSummaryPage {
 		let toast = this.toastCtrl.create({
 			message: messages,
 
-			duration: 3000
+			duration: 500
 		});
 		toast.present();
 	}

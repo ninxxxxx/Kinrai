@@ -10,6 +10,7 @@ import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-fo
 import { ModalAddOptionComponent } from '../components/modal-add-option/modal-add-option';
 import { ModalAddOrderComponent } from '../components/modal-add-order/modal-add-order';
 import { OrderListComponent } from '../components/order-list/order-list';
+import { ModalPaymentComponent } from '../components/modal-payment/modal-payment';
 //Pages
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 import { FoodTypePage } from '../pages/food-type/food-type';
@@ -41,7 +42,8 @@ import { BillPage } from '../pages/bill/bill';
   ToppingPage,
   ChooseFoodPage,
   OrderSummaryPage,
-  BillPage
+  BillPage,
+  ModalPaymentComponent
   ],
   imports: [
   IonicModule.forRoot(MyApp)
@@ -63,7 +65,8 @@ import { BillPage } from '../pages/bill/bill';
   ToppingPage,
   ChooseFoodPage,
   OrderSummaryPage,
-  BillPage
+  BillPage,
+  ModalPaymentComponent
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
 })

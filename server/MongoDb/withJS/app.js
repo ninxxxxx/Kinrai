@@ -373,6 +373,8 @@ app.post('/newfood',(req, res)=>{
 		// date.setHours(date.getHours());
 
 		bill.total_price = rawBill.total_price;
+		if(rawBill.table_number == "")
+			rawBill.table_number = "Individual";
 		bill.table_number = rawBill.table_number;
 		bill.date = date;
 		
@@ -470,6 +472,28 @@ app.post('/newfood',(req, res)=>{
 		});
 	});
 
+	app.get('/bills/', function(req, res){
+		Bill.find({is_paid: { $ne:true }},function(err, bills){
+			if(err) throw err;
+			res.json(bills);
+		});		
+	});
+
+	app.get('/bills/table_number/', function(req, res){
+		Bill.find({}).distinct('table_number', {table_number:{$ne:"Individual"}})
+		.exec((err, bills)=>{
+			if(err) throw err;
+			res.json(bills);
+		});
+	});
+	app.get('/bills/table_number/:tableNumber', function(req, res){
+		let table_number = req.params.tableNumber;
+
+		Bill.find({table_number: table_number, is_paid:false}).exec((err, bills)=>{
+			if(err) throw err;
+			res.json(bills);
+		});
+	});
 // 	testAdd = function(){
 // 		Order.find({'food.category.title':'Main Dish'}, function(err, orders){
 // 			if(err) throw err;

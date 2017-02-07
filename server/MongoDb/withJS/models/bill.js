@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var billSchema = new Schema({
 	bill_number: {type: String},
 	date: {type: Date, default: Date.now},
-	table_number: {type: String},
+	table_number: {type: String, default:'Individual'},
 	orders: [{type: Schema.Types.ObjectId, ref:'Order'}],
 	total_price: {type: Number, default: 0},
 	is_paid: {type: Boolean, default: false}

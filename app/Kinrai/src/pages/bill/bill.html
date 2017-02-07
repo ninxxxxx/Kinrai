@@ -6,13 +6,40 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Bill</ion-title>
-  </ion-navbar>
+	<ion-navbar color="primary">
+		<button ion-button icon-left menuToggle>  
+			<ion-icon md="md-menu"></ion-icon>
+		</button>
+		<ion-title>Bill</ion-title>
+	</ion-navbar>
+
+	<ion-toolbar color="primary">
+		<ion-segment color="light" [(ngModel)]="currentView" >
+			<ion-segment-button value="table">Table</ion-segment-button>
+			<ion-segment-button value="individual">Individual</ion-segment-button>
+		</ion-segment>
+	</ion-toolbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+	<!-- {{currentVeiw}} -->
+	<div [ngSwitch]="currentView">
+		<ion-grid *ngSwitchCase="'table'">
+			<ion-row *ngFor="let row of tableNumbers">
+				<ion-col width-33 *ngFor="let col of row">
+					<ion-card (click)="openPaymentModal(col)">
+						<ion-item style="text-align: center;"><h3>{{col}}</h3></ion-item>
+					</ion-card>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+
+		<div *ngSwitchCase="'individual'">
+			individual
+		</div>
+	</div>
+
 
 </ion-content>

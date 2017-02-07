@@ -137,4 +137,15 @@ import 'rxjs/add/operator/map';
       return response;  
     }
 
+    getTableNumbers(){
+      let url = this.server + 'bills/table_number';
+      let response = this.http.get(url).map(res => res.json());
+      return response;   
+    }
+
+    getBillsFromTable(tableNumber){
+      let url = this.server + 'bills/table_number/' + tableNumber;
+      let response = this.http.get(url).map(res => res.json());
+      return response;    
+    }
   }
