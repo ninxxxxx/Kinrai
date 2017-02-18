@@ -8,19 +8,80 @@
 
 	<ion-navbar color="primary">
 		<ion-title>Payment</ion-title>
+		<ion-buttons end>
+			<button (click)="cancel()" item-right color="jaa" icon-only ion-button clear >
+				<ion-icon name="ios-arrow-down" ></ion-icon>
+			</button>
+		</ion-buttons>
 	</ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
-	<div style="text-align: center;">
-		<h1>Table Number: {{tableNumber}}</h1>
-	</div>
+	<ion-grid style="padding-bottom: 0px;">
+		<ion-row style="padding-bottom: 0px;">
+			<ion-col style="text-align: center;">
+				<h1 style="margin-bottom: 0px;">Table Number: {{tableNumber}}</h1>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
 	<ion-list>
-		<ion-item *ngFor="let bill of bills">
-			 {{bill.bill_number}}
+		<ion-item *ngFor="let bill of bills" style="padding-left: 0px;">
+			<ion-grid style="margin-left: 8px;">
+				<ion-row>
+					<ion-col style="text-align: left;">
+						<h2 >Bill: {{bill.bill_number}}</h2>
+					</ion-col>
+				</ion-row>
+				<ion-row *ngFor="let order of bill.orders">
+					<ion-col style="text-align: left;">
+						<h2 >{{order.food.title}}({{order.amount}})</h2>
+						<span style="font-size: small" *ngFor="let topping of order.selected_toppings">
+							{{topping.title}}: {{topping.optionTitle}}({{topping.price == 0 ? "Free": topping.price}})
+						</span>
+					</ion-col>
+					<ion-col style="text-align: right;">
+						<h2 >{{order.price * order.amount}}.-</h2>
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						<h2 style="font-weight: bold;">Total</h2>	
+					</ion-col>
+					<ion-col>
+						<h2 style="font-weight: bold;">{{bill.total_price}}.-</h2>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
 		</ion-item>
 	</ion-list>
 
 </ion-content>
+
+<ion-footer>
+	<ion-row >
+		<ion-col style="text-align: right;">
+			<h1 style="margin-top: 6px; margin-bottom: 0px;">Total: </h1>
+		</ion-col>
+		<ion-col style="text-align: left;">
+			<h1 style="margin-top: 6px; margin-bottom: 0px;">{{totalPrice}}.-</h1>
+		</ion-col>
+	</ion-row>
+	<ion-row>
+		<ion-col style="text-align: center;">
+			<ion-item no-lines>
+				<ion-label inline>Recieve</ion-label>
+				<ion-input [(ngModel)]="recvMoney"></ion-input>
+			</ion-item>
+		</ion-col>
+		<ion-col style="text-align: center;">
+			<h3>Change : {{recvMoney-totalPrice > 0 ? recvMoney-totalPrice : 0}}</h3>
+		</ion-col>
+	</ion-row>
+	<ion-row>
+		<ion-col style="padding-top: 0px;">
+			<button block ion-button round color="green" (click)="confirmAlert()">OK</button>
+		</ion-col>
+	</ion-row>                      
+</ion-footer>

@@ -43,6 +43,7 @@ Ionic pages and navigation.
 		<ion-card-content>
 			<ion-item style="padding-left: 0px;">
 				<div item-left style="padding-top: 0px; vertical-align: text-top;" >
+					<h5>To Go/ For Here: {{order.togo ? "To Go" : "For Here"}}</h5>
 					<h5>Waiting Time: {{order.food.estimate_time}}</h5>
 					<h5>price: {{order.food.price}}.-</h5>
 					<h5 *ngFor="let topping of order.selected_toppings">{{topping.title}}: {{topping.optionTitle}}, {{topping.price}}.-</h5>
@@ -75,13 +76,29 @@ Ionic pages and navigation.
 				</h6>
 			</ion-col>
 		</ion-row>
-		<ion-row>
-			<ion-col>
-				<button block color="primary" ion-button (click)="openNewOrder()">add order</button>
-			</ion-col>
-			<ion-col>
-				<button block color="green" ion-button (click)="createBill()">done</button>	
-			</ion-col>
-		</ion-row>
-	</ion-grid>
+		<!-- <ion-row>
+			
+	</ion-row> -->
+	<ion-row *ngIf="!bill">
+		<ion-col>
+			<button block color="primary" ion-button (click)="openNewOrder()">add order</button>
+		</ion-col>
+		<ion-col>
+			<button block color="green" ion-button (click)="createBill()">{{bill ? "approve" : "done"}}</button>	
+		</ion-col>
+	</ion-row>
+	<ion-row *ngIf="bill">
+		<ion-col>
+		<button block color="primary" ion-button (click)="openNewOrder()">add order</button>
+		</ion-col>
+	</ion-row>
+	<ion-row *ngIf="bill">
+		<ion-col>
+			<button block color="primary" ion-button (click)="declineRequest()">Decline</button>
+		</ion-col>
+		<ion-col>
+			<button block color="green" ion-button (click)="createBill()">{{bill ? "approve" : "done"}}</button>	
+		</ion-col>
+	</ion-row>
+</ion-grid>
 </ion-footer>

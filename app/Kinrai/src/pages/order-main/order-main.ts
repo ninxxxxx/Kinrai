@@ -3,7 +3,7 @@ import { ToastController, NavController, NavParams, ModalController, ViewControl
 
 
 
-
+import { PreodersPage } from '../../pages/preoders/preoders';
 import { ModalAddOrderComponent } from '../../components/modal-add-order/modal-add-order';
 import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add-food';
 import { OrderService } from '../../providers/order-service';
@@ -33,6 +33,8 @@ export class OrderMainPage {
   status: any;
   orders: any;
 
+  isPreOrderComing: boolean;
+
   socket: any;
 
   constructor(
@@ -44,6 +46,7 @@ export class OrderMainPage {
     public viewCtrl: ViewController
     ) {
 
+    this.isPreOrderComing = false;
     this.categories = [];
     this.chosenCats = [];
     this.chosenCatsTxt = "All Category";
@@ -62,9 +65,13 @@ export class OrderMainPage {
     // =======================================================================
 
     this.socket = io(this.orderService.server);
+    this.socket.on('pre-order is coming', (msgs)=>{
+      if(!this.isPreOrderComing)
+        this.isPreOrderComing = true;
+    })
     this.socket.on('orders changed', (msgs)=>{
       console.log("orders has changed");
-      this.getOrders();
+      this.getOrderByFilter();
       // this.zone.run(()=>{
         //       this.toast("Messages: " + msgs);
         //     });
@@ -127,70 +134,85 @@ export class OrderMainPage {
   setDone(order_id){
     let indx = this.orders.map(order =>{ return order._id}).indexOf(order_id);
     this.orders[indx].status = 'done';
-    this.counter = setInterval(()=>{
-      this.countdown--;
-      if(this.countdown == 0){
-        this.countdown = 5;
-        clearInterval(this.counter);
-        this.changeOrderStatus(order_id, 'done');
-      } 
-    }, 1000)
-  }
-
-  changeOrderStatus(order_id, status){
-    if(status == "waiting"){
-      this.countdown = 5;
-      clearInterval(this.counter);
-    }
-    this.orderService.changeOrderStatus(order_id, status).subscribe(
-      res =>{
-        // this.toast(res);
-        console.log(res);
-        setTimeout(()=>{
-          this.socket.emit('orders changed', "some order's status has changed.");
-        }, 500);
-      },
-      err =>{
-        this.toast(err);
+    // this.counter = setInterval(()=>{
+      //   this.countdown--;
+      //   if(this.countdown == 0){
+        //     this.countdown = 5;
+        //     clearInterval(this.counter);
+        //     this.changeOrderStatus(order_id, 'done');
+        //   } 
+        // }, 1000)
       }
-      );
-  }
 
-  chooseCats(){
-    // this.getFullCategories();
-    this.catsSelect.open();
-  }
+      changeOrderStatus(order_id, status){
+        // if(status == "waiting"){
+          //   this.countdown = 5;
+          //   clearInterval(this.counter);
+          // }
+          this.orderService.changeOrderStatus(order_id, status).subscribe(
+            res =>{
+              // this.toast(res);
+              console.log(res);
+              setTimeout(()=>{
+                this.socket.emit('orders changed', "some order's status has changed.");
+              }, 500);
+            },
+            err =>{
+              this.toast(err);
+            }
+            );
+        }
 
-  getOrderByFilter(){
-    this.chosenCatsTxt = "";
-    console.log(this.chosenCats.length +" "+ this.categories.length);
-    if(this.chosenCats.length != this.categories.length){
-      if(this.chosenCats.length == 1)
-        this.chosenCatsTxt = this.chosenCats[0].title;
-      else{
-        this.chosenCats.map(cat =>{
-          this.chosenCatsTxt += cat.title + " ";
-        });
+        chooseCats(){
+          // this.getFullCategories();
+          this.catsSelect.open();
+        }
+
+        getOrderByFilter(){
+          this.chosenCatsTxt = "";
+          console.log(this.chosenCats.length +" "+ this.categories.length);
+          if(this.chosenCats.length != this.categories.length){
+            if(this.chosenCats.length == 1)
+              this.chosenCatsTxt = this.chosenCats[0].title;
+            else{
+              this.chosenCats.map(cat =>{
+                this.chosenCatsTxt += cat.title + " ";
+              });
+            }
+          }else{
+            this.chosenCatsTxt = "All Category";
+          }
+
+          let chosenCatsId = []; 
+          this.chosenCats.forEach(cat =>{ chosenCatsId.push(cat._id)});
+          if(chosenCatsId.length == 0){
+            this.categories.forEach(cat =>{ chosenCatsId.push(cat._id)});
+            this.chosenCatsTxt = "All Category";
+          }
+
+          this.orderService.getOrderByFilter(chosenCatsId).subscribe(
+            orders =>{
+              console.log(orders); 
+              this.orders = []
+              orders.map(order=>{
+                if(order.food.category)
+                  this.orders.push(order);
+              });
+            },
+            err =>{
+              console.log(err);
+            }
+            )
+        }
+
+        openPreOrders(){
+          this.isPreOrderComing = !this.isPreOrderComing;
+          let modal = this.modalCtrl.create(PreodersPage);
+          modal.present();
+        }
+
+        dd(){
+          console.log(this.isPreOrderComing);
+          this.isPreOrderComing = !this.isPreOrderComing;
+        }
       }
-    }else{
-      this.chosenCatsTxt = "All Category";
-    }
-
-    let chosenCatsId = []; 
-    this.chosenCats.forEach(cat =>{ chosenCatsId.push(cat._id)});
-
-    this.orderService.getOrderByFilter(chosenCatsId).subscribe(
-      orders =>{
-        console.log(orders); 
-        this.orders = []
-        orders.map(order=>{
-          if(order.food.category)
-            this.orders.push(order);
-        });
-      },
-      err =>{
-        console.log(err);
-      }
-      )
-  }
-}

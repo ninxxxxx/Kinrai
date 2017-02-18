@@ -6,6 +6,14 @@
     <ion-title>
       Now Orders
     </ion-title>
+
+    <ion-buttons end>
+    <button ion-button (click)="dd()">dd</button>
+      <button ion-button (click)="openPreOrders()">
+        <ion-badge color="light" *ngIf="isPreOrderComing">!</ion-badge>
+        Pre-Order
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
   <ion-toolbar color="primary">
@@ -14,9 +22,9 @@
 </ion-header>
 
 <ion-content>
-<!-- {{chosenCats|json}} -->
+  <!-- {{chosenCats|json}} -->
   <ion-item [hidden]="true">
-  <ion-label>Select Category</ion-label>
+    <ion-label>Select Category</ion-label>
     <ion-select (ionChange)="getOrderByFilter()" [(ngModel)]="chosenCats" #catsSelect multiple="true" okText="save" cancelText="cancel">
       <ion-option *ngFor="let cat of categories" [value]="cat">{{cat.title}}</ion-option>
     </ion-select>
@@ -44,11 +52,18 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col>
-            <!-- <button>Out of stock</button> -->
-            <button (click)="changeOrderStatus(order._id, 'doing')" [hidden]="order.status != 'waiting'" block round outline ion-button>Waiting</button>
-            <button (click)="setDone(order._id)" [hidden]="order.status != 'doing'" block round ion-button outline color="light">Doing...</button>
-            <button (click)="changeOrderStatus(order._id, 'waiting')" [hidden]="order.status != 'done'" block round ion-button>Done in ... {{countdown}}</button>
+          <ion-col width-80>
+            <button (click)="changeOrderStatus(order._id, 'doing')" [hidden]="order.status != 'waiting'" block round outline ion-button>
+              Waiting
+            </button>
+            <button (click)="changeOrderStatus(order._id, 'waiting')" [hidden]="order.status != 'doing'" block round ion-button color="light">
+              Cooking...
+            </button>
+          </ion-col>
+          <ion-col width-20>
+            <button (click)="changeOrderStatus(order._id, 'done')" block round ion-button>
+              Done
+            </button>
           </ion-col>
         </ion-row>
       </ion-grid>

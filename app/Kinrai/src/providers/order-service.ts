@@ -15,7 +15,8 @@ import 'rxjs/add/operator/map';
 
   	constructor(private http: Http) {
 
-      this.server = 'http://172.30.230.103:8080/';//lan
+      this.server = 'http://192.168.137.1:8080/';//lan
+      // this.server = 'http://172.30.230.103:8080/';//lan
       // this.server = 'http://172.30.88.77:8080/'; //psu802
       // this.server = 'http://172.30.80.115:8080/';
       // this.server = 'http://172.30.80.103:8080/';
@@ -147,5 +148,23 @@ import 'rxjs/add/operator/map';
       let url = this.server + 'bills/table_number/' + tableNumber;
       let response = this.http.get(url).map(res => res.json());
       return response;    
+    }
+
+    getBillFromId(billId){
+      let url = this.server + 'bill/' + billId;
+      let response = this.http.get(url).map(res => res.json());
+      return response;    
+    }
+
+    getUntitledBills(){
+      let url = this.server + 'bills/untitled/';
+      let response = this.http.get(url).map(res => res.json());
+      return response;    
+    }
+
+    checkBill(bill_ids){
+      let url = this.server + 'bills/checkbill/';
+      let response = this.http.post(url, {bill_ids}).map(res => res.json());
+      return response;     
     }
   }

@@ -7,16 +7,19 @@
 <ion-header>
 
 	<ion-navbar color="primary">
+		<ion-title>
+			Bill
+		</ion-title>
 		<button ion-button icon-left menuToggle>  
 			<ion-icon md="md-menu"></ion-icon>
 		</button>
-		<ion-title>Bill</ion-title>
 	</ion-navbar>
 
 	<ion-toolbar color="primary">
 		<ion-segment color="light" [(ngModel)]="currentView" >
-			<ion-segment-button value="table">Table</ion-segment-button>
-			<ion-segment-button value="individual">Individual</ion-segment-button>
+			<ion-segment-button value="table">Table Name</ion-segment-button>
+			<ion-segment-button value="individual">Untitled</ion-segment-button>
+			<!-- <ion-segment-button value="individual">Individual</ion-segment-button> -->
 		</ion-segment>
 	</ion-toolbar>
 
@@ -29,16 +32,40 @@
 		<ion-grid *ngSwitchCase="'table'">
 			<ion-row *ngFor="let row of tableNumbers">
 				<ion-col width-33 *ngFor="let col of row">
-					<ion-card (click)="openPaymentModal(col)">
+					<ion-card (click)="openPaymentModal(col, '')">
 						<ion-item style="text-align: center;"><h3>{{col}}</h3></ion-item>
 					</ion-card>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
 
-		<div *ngSwitchCase="'individual'">
-			individual
-		</div>
+		<ion-list *ngSwitchCase="'individual'">
+			<button ion-item *ngFor="let bill of untitledBills" style="padding-left: 0px;" (click)="openPaymentModal('', bill._id)">
+				<ion-grid style="margin-left: 8px;">
+					<ion-row>
+						<ion-col style="text-align: left;">
+							<h2 style="font-weight: bold;">Bill: {{bill.bill_number}}</h2>
+						</ion-col>
+					</ion-row>
+					<ion-row *ngFor="let order of bill.orders">
+						<ion-col style="text-align: left;">
+							<h2 >{{order.food.title}}: {{order.amount}}{{order.togo ? "(กลับบ้าน)" : ""}}</h2>
+							<span style="font-size: small" *ngFor="let topping of order.selected_toppings">
+								{{topping.title}}: {{topping.optionTitle}}({{topping.price == 0 ? "Free": topping.price}})
+							</span>
+						</ion-col>
+						<ion-col style="text-align: right;">
+							<h2 >{{order.price * order.amount}}.-</h2>
+						</ion-col>
+					</ion-row>
+					<ion-row>
+						<ion-col style="text-align: right;">
+							<h2 style="font-weight: bold;">Total {{bill.total_price}}.-</h2>
+						</ion-col>
+					</ion-row>
+				</ion-grid>
+			</button>
+		</ion-list>
 	</div>
 
 

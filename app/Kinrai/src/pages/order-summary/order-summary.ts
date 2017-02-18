@@ -20,6 +20,7 @@ export class OrderSummaryPage {
 	totalPrice: number;
 	tableNumber: string;
 
+	bill: any;
 	socket: any;
 	constructor(
 		public toastCtrl: ToastController,
@@ -32,9 +33,18 @@ export class OrderSummaryPage {
 		this.tableNumber = "";
 		this.totalWaitTime = 0;
 		this.totalPrice = 0;
-		this.openNewOrder();
-		// let firstOrder = this.navParams.get('order');
-		// this.orders.push(firstOrder);
+		
+		this.bill = this.navParams.get('bill');
+		if(this.bill){
+			this.tableNumber = this.bill.bill.table_number;
+			this.orders = this.bill.bill.orders;
+			this.totalPrice = this.bill.bill.total_price;
+			this.calWaitTime();
+		}else{
+			this.openNewOrder();
+		}
+
+
 		this.socket = io(this.orderService.server);
 
 	}
@@ -77,9 +87,13 @@ export class OrderSummaryPage {
 			}
 			);
 		setTimeout(()=>{
+			if(this.bill){
+				this.socket.emit("remove pre-order", this.bill.id);
+			}
 			this.socket.emit("orders changed", "...");
+			this.socket.emit("bills changed", "...");
 			this.viewCtrl.dismiss();
-		},1000);
+		},250);
 	}
 
 	toast(messages){
@@ -100,6 +114,7 @@ export class OrderSummaryPage {
 		this.totalPrice = 0;
 		this.orders.map(order =>{
 			this.totalPrice += (order.price*order.amount);
+			// order.selected_toppings.map(top =>{ this.totalPrice += (top.price*order.amount)});
 		});
 	}
 
@@ -110,5 +125,10 @@ export class OrderSummaryPage {
 			console.log(order);
 		});
 		modal.present();
+	}
+
+	declineRequest(){
+		this.socket.emit("remove pre-order", this.bill.id);
+		this.viewCtrl.dismiss();
 	}
 }

@@ -7,11 +7,15 @@ import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add
 import { ModalAddOrderComponent } from '../../components/modal-add-order/modal-add-order';
 import { BillPage } from '../bill/bill';
 
+import { OrderService } from '../../providers/order-service';
+
+declare var io;
 
 
 
 @Component({
 	templateUrl: 'tabs.html',
+	providers: [OrderService]
 })
 
 export class TabsPage {
@@ -20,9 +24,10 @@ export class TabsPage {
 	tab1Root: any = BillPage;
 	tab3Root: any = OrderMainPage;
 	
+	socket: any;
 
 
-	constructor(public modalCtrl: ModalController) 
+	constructor(private orderService: OrderService, public modalCtrl: ModalController) 
 	{
 
 

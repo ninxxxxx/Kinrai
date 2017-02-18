@@ -32,8 +32,8 @@ export class MyApp {
       name: "Managements",
       pages: [
       {title: 'Foods', component: FoodCategoriesPage},
-      {title: 'Promotion', component: ManagementPage},
-      {title: 'Sales History', component: ManagementPage},
+      // {title: 'Promotion', component: ManagementPage},
+      // {title: 'Sales History', component: ManagementPage},
       ]
     }
     ];
