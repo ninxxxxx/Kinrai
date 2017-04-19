@@ -22,6 +22,8 @@ import { OrderService } from '../../providers/order-service';
 
     curCatText: String;
     curTypeText: String;
+
+    server: string;
     constructor(
       public viewCtrl: ViewController,
       public actSheetCtrl: ActionSheetController,
@@ -33,6 +35,7 @@ import { OrderService } from '../../providers/order-service';
       public navParams: NavParams
       ) 
     {	
+      this.server = this.orderService.getServer();
       this.categories = [];
       this.curCategory = {title: ""};
       this.curType = {title: ""};

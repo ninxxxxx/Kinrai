@@ -4,6 +4,8 @@ import { ToastController, ViewController, NavController, NavParams, ModalControl
 
 import { OrderService } from '../../providers/order-service';
 import { ModalAddOrderComponent } from '../../components/modal-add-order/modal-add-order';
+import { SelectTablePage } from '../../pages/select-table/select-table';
+
 
 declare var io;
 
@@ -18,8 +20,9 @@ export class OrderSummaryPage {
 	orders = [];
 	totalWaitTime: number;
 	totalPrice: number;
-	tableNumber: string;
+	tableNumber: any;
 
+	editIndex: number;
 	bill: any;
 	socket: any;
 	constructor(
@@ -30,7 +33,7 @@ export class OrderSummaryPage {
 		public navParams: NavParams,
 		public viewCtrl: ViewController
 		) {
-		this.tableNumber = "";
+		this.tableNumber = {};
 		this.totalWaitTime = 0;
 		this.totalPrice = 0;
 		
@@ -69,6 +72,10 @@ export class OrderSummaryPage {
 			}
 		});
 		modal.present();
+	}
+
+	checkTableZone(){
+		return (this.tableNumber.zone && this.tableNumber.table) ? this.createBill() : this.toast("Please select customer's table.");
 	}
 
 	createBill(){
@@ -119,10 +126,13 @@ export class OrderSummaryPage {
 	}
 
 	editOrder(order){
+		this.editIndex = this.orders.indexOf(order);
+		// console.log("index: " + this.orders.indexOf(order));
 		let modal = this.modalCtrl.create(ModalAddOrderComponent,{order});
 		modal.onDidDismiss(order =>{
 			console.log("==>");
 			console.log(order);
+			this.orders[this.editIndex] = order;
 		});
 		modal.present();
 	}
@@ -130,5 +140,13 @@ export class OrderSummaryPage {
 	declineRequest(){
 		this.socket.emit("remove pre-order", this.bill.id);
 		this.viewCtrl.dismiss();
+	}
+
+	selectTable(){
+		let modal = this.modalCtrl.create(SelectTablePage);
+		modal.onDidDismiss((tableNumber) =>{
+			this.tableNumber = tableNumber ? tableNumber : this.tableNumber; 
+		});
+		modal.present();
 	}
 }

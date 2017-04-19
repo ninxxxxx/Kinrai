@@ -25,7 +25,7 @@
 	<ion-card *ngFor="let food of curType.foods" (click)="choose(food._id)">
 		<ion-item>
 			<ion-thumbnail item-left>
-				<img [src]="food.img_url">
+				<img [src]="server + food.img_url">
 			</ion-thumbnail>
 			<h1>{{food.title}}</h1>
 			<h2>wait for: {{food.estimate_time}} mins</h2>

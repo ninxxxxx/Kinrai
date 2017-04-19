@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { reorderArray, ToastController, ModalController } from 'ionic-angular';
-import { FilePath, FileChooser } from 'ionic-native';
 
 
 import {  OrderService } from '../../providers/order-service';

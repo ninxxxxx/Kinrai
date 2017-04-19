@@ -1,0 +1,57 @@
+<!--
+  Generated template for the SelectTable page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+	<ion-navbar color="primary">
+		<ion-title>Select Table</ion-title>
+	</ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-list>
+		<ion-list-header style="background-color: #dcdcdc; margin-bottom: 0px;">
+			<h2>
+				Optional
+			</h2>
+		</ion-list-header>
+		<ion-grid>
+			<ion-row>
+				<ion-col width-50>
+					<ion-card (click)="select('takeout', '')">
+						<ion-item style="text-align: center;">Takeout</ion-item>
+					</ion-card>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-list>	
+	<ion-list *ngFor="let tableZone of tableZones">
+		<ion-list-header style="background-color: #dcdcdc; margin-bottom: 0px;">
+			<h2>
+				Zone: {{tableZone.zone}}
+			</h2>
+			<!-- <ion-icon item-right name="ios-arrow-down"></ion-icon> -->
+		</ion-list-header>
+		<ion-grid>
+			<ion-row wrap>
+				<ion-col width-25 *ngFor="let table of tableZone.tables">
+					<ion-card (click)="select(tableZone.zone,table)">
+						<ion-item style="text-align: center;">
+							{{table}}
+						</ion-item>
+					</ion-card>					
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+		<!-- <button (click)="select()" ion-item *ngFor="let table of zone.tables" style="padding-left: 0px;">
+			<h3 style="padding-left: 16px;">
+				{{table}}
+			</h3>	
+		</button> -->
+	</ion-list>
+</ion-content>

@@ -1,9 +1,14 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { HttpModule } from '@angular/http';
-
-
+import { BrowserModule } from '@angular/platform-browser';
 import { MyApp } from './app.component';
+
+
+import { File } from '@ionic-native/file';
+import { FileChooser } from '@ionic-native/file-chooser';
+import { FilePath } from '@ionic-native/file-path';
+import { DatePicker } from '@ionic-native/date-picker';
 
 //component
 import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
@@ -24,6 +29,10 @@ import { ChooseFoodPage } from '../pages/choose-food/choose-food';
 import { OrderSummaryPage } from '../pages/order-summary/order-summary';
 import { BillPage } from '../pages/bill/bill';
 import { PreodersPage } from '../pages/preoders/preoders';
+import { TablePage } from '../pages/table/table';
+import { SelectTablePage } from '../pages/select-table/select-table';
+import { SaleHistoryPage } from '../pages/sale-history/sale-history';
+
 
 
 @NgModule({
@@ -45,9 +54,14 @@ import { PreodersPage } from '../pages/preoders/preoders';
   OrderSummaryPage,
   BillPage,
   ModalPaymentComponent,
-  PreodersPage
+  PreodersPage,
+  TablePage,
+  SelectTablePage,
+  SaleHistoryPage
   ],
   imports: [
+  HttpModule,
+  BrowserModule,
   IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -69,8 +83,13 @@ import { PreodersPage } from '../pages/preoders/preoders';
   OrderSummaryPage,
   BillPage,
   ModalPaymentComponent,
-  PreodersPage
+  PreodersPage,
+  TablePage,
+  SelectTablePage,
+  SaleHistoryPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
+  providers: [
+  {provide: ErrorHandler, useClass: IonicErrorHandler}, File, FileChooser, FilePath, DatePicker
+  ]
 })
 export class AppModule {}

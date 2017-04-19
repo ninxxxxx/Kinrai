@@ -15,16 +15,15 @@ import 'rxjs/add/operator/map';
 
   	constructor(private http: Http) {
 
-      this.server = 'http://192.168.137.1:8080/';//lan
       // this.server = 'http://172.30.230.103:8080/';//lan
-      // this.server = 'http://172.30.88.77:8080/'; //psu802
-      // this.server = 'http://172.30.80.115:8080/';
-      // this.server = 'http://172.30.80.103:8080/';
-      // this.server = 'http://172.30.80.25:8080/'; //coe
-      // this.server = 'http://192.168.1.102:5555/';
+      this.server = 'http://192.168.137.1:8080/';//wifi
 
     }
 
+    getServer(){
+      console.log(this.server);
+      return this.server;
+    }
     
 
 
@@ -139,14 +138,16 @@ import 'rxjs/add/operator/map';
     }
 
     getTableNumbers(){
+      let header = new Headers({ 'content-type' : 'application/json', 'Access-Control-Allow-Origin': '*' });
+      let options = new RequestOptions({ headers: header});
       let url = this.server + 'bills/table_number';
       let response = this.http.get(url).map(res => res.json());
       return response;   
     }
 
     getBillsFromTable(tableNumber){
-      let url = this.server + 'bills/table_number/' + tableNumber;
-      let response = this.http.get(url).map(res => res.json());
+      let url = this.server + 'bills/table_number/';
+      let response = this.http.post(url, {tableNumber}).map(res => res.json());
       return response;    
     }
 
@@ -167,4 +168,22 @@ import 'rxjs/add/operator/map';
       let response = this.http.post(url, {bill_ids}).map(res => res.json());
       return response;     
     }
+
+
+
+    // ==============================================================================================
+
+    getTable(){
+      let url = this.server + 'tables/';
+      let response = this.http.get(url).map(res => res.json());
+      return response;           
+    }
+
+    newTableZone(zone, tables){
+      let url = this.server + 'tables/new';
+      let response = this.http.post(url, {zone: zone, tables: tables}).map(res => res.json());
+      return response;            
+    }
+
+
   }

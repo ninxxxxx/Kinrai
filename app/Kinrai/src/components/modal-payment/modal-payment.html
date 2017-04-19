@@ -22,7 +22,7 @@
 	<ion-grid style="padding-bottom: 0px;">
 		<ion-row style="padding-bottom: 0px;">
 			<ion-col style="text-align: center;">
-				<h1 style="margin-bottom: 0px;">Table Number: {{tableNumber}}</h1>
+				<h1 style="margin-bottom: 0px;">Table Number: {{tableNumber.zone + '_' + tableNumber.table}}</h1>
 			</ion-col>
 		</ion-row>
 	</ion-grid>
@@ -81,7 +81,9 @@
 	</ion-row>
 	<ion-row>
 		<ion-col style="padding-top: 0px;">
+			<!-- <button block ion-button round style="background-image: linear-gradient(-60deg, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
 			<button block ion-button round color="green" (click)="confirmAlert()">OK</button>
+			<!-- <button block ion-button round style="background-image: linear-gradient(to top, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
 		</ion-col>
 	</ion-row>                      
 </ion-footer>

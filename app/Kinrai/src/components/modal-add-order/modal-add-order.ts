@@ -27,6 +27,7 @@ import { OrderService } from '../../providers/order-service';
     
     isToggle: boolean;
 
+    server: string;
     constructor(
       public navParams: NavParams,
       public loadingCtrl: LoadingController, 
@@ -37,7 +38,11 @@ import { OrderService } from '../../providers/order-service';
       public viewCtrl: ViewController
       ) 
     {
+
       this.isToggle = true;
+      this.server = this.orderService.getServer();
+
+
       let o = this.navParams.get("order");
       if(o){
         this.amount = o.amount;
@@ -45,6 +50,8 @@ import { OrderService } from '../../providers/order-service';
         // this.isToggle = true;
         this.food = o.food;
         this.toppings = o.selected_toppings;
+        console.log(o.togo);
+        this.order = {togo: o.togo};
       }else {
         console.log("no order");
         this.amount = 1;
@@ -54,11 +61,7 @@ import { OrderService } from '../../providers/order-service';
         this.order = {food:{}, selected_toppings: [], price: 0, togo:false};
         this.chooseFood();
       }
-      // this.amount = 1;
-      // this.total = 0;
-      // this.isToggle = false;
-      // this.food = {title:"", type: {title: ""}, category: {title: ""}, toppings: [], price: 0};
-      // this.order = {food:{}, selected_toppings: [], price: 0,}
+
 
       this.getFullCats();
     }
@@ -152,6 +155,7 @@ import { OrderService } from '../../providers/order-service';
     }
 
     gotoOrderSummary(){
+      console.log("togo: " + this.order.togo);
       let order = {
         food: this.food,
         selected_toppings: this.toppings,

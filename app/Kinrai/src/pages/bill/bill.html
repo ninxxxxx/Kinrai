@@ -17,9 +17,8 @@
 
 	<ion-toolbar color="primary">
 		<ion-segment color="light" [(ngModel)]="currentView" >
-			<ion-segment-button value="table">Table Name</ion-segment-button>
-			<ion-segment-button value="individual">Untitled</ion-segment-button>
-			<!-- <ion-segment-button value="individual">Individual</ion-segment-button> -->
+			<ion-segment-button value="table">table</ion-segment-button>
+			<ion-segment-button value="individual">takeout</ion-segment-button>
 		</ion-segment>
 	</ion-toolbar>
 
@@ -27,24 +26,65 @@
 
 
 <ion-content>
+<!-- {{d|json}} -->
+<!-- 	<ion-grid style="height: 100%">
+		<ion-row style="flex: 1">
+			<ion-col style="background-color: red"></ion-col>
+			<ion-col style="background-color: blue"></ion-col>
+		</ion-row>
+		<ion-row style="flex: 1">
+			<ion-col style="background-color: black"></ion-col>
+			<ion-col></ion-col>
+		</ion-row>
+	</ion-grid> -->
 	<!-- {{currentVeiw}} -->
+
 	<div [ngSwitch]="currentView">
-		<ion-grid *ngSwitchCase="'table'">
-			<ion-row *ngFor="let row of tableNumbers">
-				<ion-col width-33 *ngFor="let col of row">
+		<div *ngSwitchCase="'table'">
+			<ion-list *ngFor="let tableZone of tableZones">
+				<ion-list-header style="background-color: #465267; margin-bottom: 0px; box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);">
+					<h2 style="color: #ffffff">
+						Zone: {{tableZone.zone}}
+					</h2>
+					<!-- <ion-icon item-right name="ios-arrow-down"></ion-icon> -->
+				</ion-list-header>
+				<ion-grid>
+					<ion-row wrap>
+						<ion-col width-25 *ngFor="let table of tableZone.tables" style="text-align: center;">
+							<ion-card (click)="openPaymentModal({zone: tableZone.zone, table: table}, '')">
+								<ion-item style="text-align: center;">
+									{{table}}
+								</ion-item>
+							</ion-card>
+							<ion-icon style="color: #757575;" [name]="isIn(tableZone.zone, table) ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+							<!-- <p>({{isIn(tableZone.zone, table) ? 'used' : 'available'}})</p> -->
+						</ion-col>
+					</ion-row>
+				</ion-grid>
+		<!-- <button (click)="select()" ion-item *ngFor="let table of zone.tables" style="padding-left: 0px;">
+			<h3 style="padding-left: 16px;">
+				{{table}}
+			</h3>	
+		</button> -->
+	</ion-list>
+			<!-- <ion-row wrap>
+				<ion-col width-33 *ngFor="let col of bills">
 					<ion-card (click)="openPaymentModal(col, '')">
 						<ion-item style="text-align: center;"><h3>{{col}}</h3></ion-item>
 					</ion-card>
 				</ion-col>
-			</ion-row>
-		</ion-grid>
+			</ion-row> -->
+		</div>
 
 		<ion-list *ngSwitchCase="'individual'">
 			<button ion-item *ngFor="let bill of untitledBills" style="padding-left: 0px;" (click)="openPaymentModal('', bill._id)">
 				<ion-grid style="margin-left: 8px;">
-					<ion-row>
+					<ion-row style="height: 100%">
 						<ion-col style="text-align: left;">
-							<h2 style="font-weight: bold;">Bill: {{bill.bill_number}}</h2>
+							<h2 style="font-weight: bold;">Customer: {{bill.table_number.table}}</h2>
+						</ion-col>
+						<ion-col style="text-align: right;">
+							<h3 style="font-weight: bold;">Bill: {{bill.bill_number}}</h3>
 						</ion-col>
 					</ion-row>
 					<ion-row *ngFor="let order of bill.orders">

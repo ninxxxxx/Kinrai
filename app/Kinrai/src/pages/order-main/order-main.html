@@ -6,14 +6,6 @@
     <ion-title>
       Now Orders
     </ion-title>
-
-    <ion-buttons end>
-    <button ion-button (click)="dd()">dd</button>
-      <button ion-button (click)="openPreOrders()">
-        <ion-badge color="light" *ngIf="isPreOrderComing">!</ion-badge>
-        Pre-Order
-      </button>
-    </ion-buttons>
   </ion-navbar>
 
   <ion-toolbar color="primary">
@@ -36,7 +28,7 @@
         <ion-row>
           <ion-col><h1>{{order.food.title}}</h1></ion-col>
           <ion-col style="text-align: right;">
-            <h3>Table No.{{order.bill.table_number}}</h3>
+            <h3>Table No.{{order.bill.table_number.zone}}_{{order.bill.table_number.table}}</h3>
             <h5>{{order.bill.bill_number}}</h5>
           </ion-col>
         </ion-row>
@@ -52,16 +44,21 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col width-80>
-            <button (click)="changeOrderStatus(order._id, 'doing')" [hidden]="order.status != 'waiting'" block round outline ion-button>
+          <ion-col>
+            <button (click)="changeOrderStatus(order._id, 'cooking')" [hidden]="order.status != 'waiting'" block round outline ion-button>
               Waiting
             </button>
-            <button (click)="changeOrderStatus(order._id, 'waiting')" [hidden]="order.status != 'doing'" block round ion-button color="light">
+            <button (click)="changeOrderStatus(order._id, 'ready')" [hidden]="order.status != 'cooking'" block round outline ion-button color="light">
               Cooking...
             </button>
+            <button (click)="changeOrderStatus(order._id, 'waiting')" [hidden]="order.status != 'ready'" block round outline ion-button color="green">
+              Ready to serve
+            </button>
           </ion-col>
-          <ion-col width-20>
-            <button (click)="changeOrderStatus(order._id, 'done')" block round ion-button>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <button *ngIf="order.status == 'ready'" (click)="setDone(order._id)" block round ion-button>
               Done
             </button>
           </ion-col>

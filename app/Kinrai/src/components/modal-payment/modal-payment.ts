@@ -61,6 +61,7 @@ import { OrderService } from '../../providers/order-service';
       this.orderService.getBillFromId(this.billId).subscribe(
         bill =>{
           this.bills = [bill];
+          this.tableNumber = bill.table_number;
           this.totalPrice = bill.total_price;
         },
         err =>{

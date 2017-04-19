@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { ToastController, NavController, NavParams, ModalController, ViewController, Select } from 'ionic-angular';
+import { AlertController, ToastController, NavController, NavParams, ModalController, ViewController, Select } from 'ionic-angular';
 
 
 
@@ -38,6 +38,7 @@ export class OrderMainPage {
   socket: any;
 
   constructor(
+    public alertCtrl: AlertController,
     private zone: NgZone,
     private orderService: OrderService,
     public toastCtrl: ToastController,
@@ -98,6 +99,7 @@ export class OrderMainPage {
   getOrders(){
     this.orderService.getOrders().subscribe(
       res =>{
+        console.log(res);
         this.orders = res;
       },
       err =>{
@@ -132,87 +134,96 @@ export class OrderMainPage {
   }
 
   setDone(order_id){
-    let indx = this.orders.map(order =>{ return order._id}).indexOf(order_id);
-    this.orders[indx].status = 'done';
-    // this.counter = setInterval(()=>{
-      //   this.countdown--;
-      //   if(this.countdown == 0){
-        //     this.countdown = 5;
-        //     clearInterval(this.counter);
-        //     this.changeOrderStatus(order_id, 'done');
-        //   } 
-        // }, 1000)
+    let confirm = this.alertCtrl.create({
+      title: 'Did you done this order ?',
+      message: 'Please make sure before done this order',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            // console.log('Disagree clicked');
+          }
+        },
+        {
+          text: 'OK',
+          handler: () => {
+            this.changeOrderStatus(order_id, "done");
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
+
+  changeOrderStatus(order_id, status){
+    // if(status == "waiting"){
+      //   this.countdown = 5;
+      //   clearInterval(this.counter);
+      // }
+      this.orderService.changeOrderStatus(order_id, status).subscribe(
+        res =>{
+          // this.toast(res);
+          console.log(res);
+          setTimeout(()=>{
+            this.socket.emit('orders changed', "some order's status has changed.");
+          }, 250);
+        },
+        err =>{
+          this.toast(err);
+        }
+        );
+    }
+
+    chooseCats(){
+      // this.getFullCategories();
+      this.catsSelect.open();
+    }
+
+    getOrderByFilter(){
+      this.chosenCatsTxt = "";
+      console.log(this.chosenCats.length +" "+ this.categories.length);
+      if(this.chosenCats.length != this.categories.length){
+        if(this.chosenCats.length == 1)
+          this.chosenCatsTxt = this.chosenCats[0].title;
+        else{
+          this.chosenCats.map(cat =>{
+            this.chosenCatsTxt += cat.title + " ";
+          });
+        }
+      }else{
+        this.chosenCatsTxt = "All Category";
       }
 
-      changeOrderStatus(order_id, status){
-        // if(status == "waiting"){
-          //   this.countdown = 5;
-          //   clearInterval(this.counter);
-          // }
-          this.orderService.changeOrderStatus(order_id, status).subscribe(
-            res =>{
-              // this.toast(res);
-              console.log(res);
-              setTimeout(()=>{
-                this.socket.emit('orders changed', "some order's status has changed.");
-              }, 500);
-            },
-            err =>{
-              this.toast(err);
-            }
-            );
-        }
-
-        chooseCats(){
-          // this.getFullCategories();
-          this.catsSelect.open();
-        }
-
-        getOrderByFilter(){
-          this.chosenCatsTxt = "";
-          console.log(this.chosenCats.length +" "+ this.categories.length);
-          if(this.chosenCats.length != this.categories.length){
-            if(this.chosenCats.length == 1)
-              this.chosenCatsTxt = this.chosenCats[0].title;
-            else{
-              this.chosenCats.map(cat =>{
-                this.chosenCatsTxt += cat.title + " ";
-              });
-            }
-          }else{
-            this.chosenCatsTxt = "All Category";
-          }
-
-          let chosenCatsId = []; 
-          this.chosenCats.forEach(cat =>{ chosenCatsId.push(cat._id)});
-          if(chosenCatsId.length == 0){
-            this.categories.forEach(cat =>{ chosenCatsId.push(cat._id)});
-            this.chosenCatsTxt = "All Category";
-          }
-
-          this.orderService.getOrderByFilter(chosenCatsId).subscribe(
-            orders =>{
-              console.log(orders); 
-              this.orders = []
-              orders.map(order=>{
-                if(order.food.category)
-                  this.orders.push(order);
-              });
-            },
-            err =>{
-              console.log(err);
-            }
-            )
-        }
-
-        openPreOrders(){
-          this.isPreOrderComing = !this.isPreOrderComing;
-          let modal = this.modalCtrl.create(PreodersPage);
-          modal.present();
-        }
-
-        dd(){
-          console.log(this.isPreOrderComing);
-          this.isPreOrderComing = !this.isPreOrderComing;
-        }
+      let chosenCatsId = []; 
+      this.chosenCats.forEach(cat =>{ chosenCatsId.push(cat._id)});
+      if(chosenCatsId.length == 0){
+        this.categories.forEach(cat =>{ chosenCatsId.push(cat._id)});
+        this.chosenCatsTxt = "All Category";
       }
+
+      this.orderService.getOrderByFilter(chosenCatsId).subscribe(
+        orders =>{
+          console.log(orders); 
+          this.orders = []
+          orders.map(order=>{
+            if(order.food.category)
+              this.orders.push(order);
+          });
+        },
+        err =>{
+          console.log(err);
+        }
+        )
+    }
+
+    openPreOrders(){
+      this.isPreOrderComing = !this.isPreOrderComing;
+      let modal = this.modalCtrl.create(PreodersPage);
+      modal.present();
+    }
+
+    dd(){
+      console.log(this.isPreOrderComing);
+      this.isPreOrderComing = !this.isPreOrderComing;
+    }
+  }

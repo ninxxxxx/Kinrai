@@ -7,11 +7,9 @@
 <ion-header>
 
 	<ion-navbar color="primary">
-		<ion-buttons end>
-			<button icon-only clear ion-button (click)="cancel()">
-				<ion-icon md="md-close"></ion-icon>
-			</button>
-		</ion-buttons>
+		<button ion-button icon-left menuToggle>  
+			<ion-icon md="md-menu"></ion-icon>
+		</button>
 		<ion-title>Pre-Orders</ion-title>
 	</ion-navbar>
 
@@ -19,10 +17,17 @@
 
 
 <ion-content>
-	<ion-list>
-		<button ion-item *ngFor="let b of bills" (click)="openSummaryOrder(b)">
-			<h1>{{b.bill.table_number ? b.bill.table_number : "ไม่มีชื่อโต๊ะ"}}</h1>
-			<span *ngFor="let order of b.bill.orders"> {{order.food.title}} |</span>
-		</button>
-	</ion-list>
+	<div>
+		
+		<ion-list #items>
+			<button ion-item *ngFor="let b of bills" (click)="openSummaryOrder(b)">
+				<h2>{{'Zone: ' + b.bill.table_number.zone + ' Table: ' + b.bill.table_number.table}}</h2>
+				<span *ngFor="let order of b.bill.orders"> {{order.food.title}} |</span>
+			</button>
+		</ion-list>
+		<ion-item style="padding-left: 0px; text-align: center;">
+			pre-order is empty
+		</ion-item>
+	</div>
+
 </ion-content>

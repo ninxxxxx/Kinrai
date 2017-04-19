@@ -28,12 +28,11 @@ import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add
     categoryId: string;
     typeId: string;
     typeIndex: number;
-    // currentCategory: any;
-    // categories: Array<any>;
-    // types: Array<any>;
-
     currentType: string;
-    // selectTypes: Array<any>;    
+
+    server: string;
+
+
     constructor(
       private orderService: OrderService,
       public toastCtrl: ToastController,
@@ -45,8 +44,8 @@ import { ModalAddFoodComponent } from '../../components/modal-add-food/modal-add
       public loadingCtrl: LoadingController
       ) 
     {
+      this.server = this.orderService.getServer();
       this.category = this.navParams.get('cat');
-      // this.category = {title:"", types:[]};
       this.categoryId = this.navParams.get('categoryId');
       this.typeId = this.navParams.get('typeId');
     }

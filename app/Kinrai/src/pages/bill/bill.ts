@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ToastController, ViewController, NavController, NavParams, ModalController } from 'ionic-angular';
 
-
 import { ModalPaymentComponent } from '../../components/modal-payment/modal-payment';
 import { OrderService } from '../../providers/order-service';
 /*
@@ -20,26 +19,43 @@ import { OrderService } from '../../providers/order-service';
   })
   export class BillPage {
 
+    d: any;
   	currentView: string;
   	bills: any;
   	tableNumbers: any;
     untitledBills: any;
-
+    tableZones: any;
+    
     socket: any;
-    constructor(public toastCtrl: ToastController, public viewCtrl: ViewController, public modalCtrl: ModalController, private orderService: OrderService, public navCtrl: NavController, public navParams: NavParams) {
+    server: string;
+
+    constructor(
+      public toastCtrl: ToastController, 
+      public viewCtrl: ViewController, 
+      public modalCtrl: ModalController, 
+      private orderService: OrderService, 
+      public navCtrl: NavController, 
+      public navParams: NavParams
+      ) 
+    {
+
+      // let r = ["1", "3", "ff", "ffd"];
+      // console.log("is 1 included in r ? : " + (r.indexOf("rrr") > -1 ? "yes" : "no"));
+      this.d = [];
+      this.server = this.orderService.getServer();
+      this.tableZones = [];
       this.currentView = "table";
       this.bills = [];
       this.tableNumbers = [];
       this.untitledBills = [];
-      this.getTableNumbers();
-      this.getIndividualBill();
 
+      this.initGet();
+      // this.gg();
 
       this.socket = io(this.orderService.server);
       this.socket.on('bills changed', (msgs)=>{
         console.log("bills has changed");
-        this.getTableNumbers();
-        this.getIndividualBill();
+        this.initGet();
       });
 
       this.socket.on('check lock bill', (msgs)=>{
@@ -65,6 +81,26 @@ import { OrderService } from '../../providers/order-service';
     }
 
 
+    initGet(){
+      this.getTableNumbers();
+      this.getIndividualBill();
+      this.getTable();
+
+      
+
+    }
+    // gg(){
+    //   BLE.startScan([]).subscribe(
+    //     res=>{
+    //       console.log("...");
+    //       this.d.push(res);
+    //       console.log(res);
+    //     },
+    //     err=>{
+
+    //     }
+    //   );
+    // }
 
     getIndividualBill(){
       this.orderService.getUntitledBills().subscribe(
@@ -81,25 +117,12 @@ import { OrderService } from '../../providers/order-service';
       this.orderService.getTableNumbers().subscribe(
         bills =>{
           this.bills = bills;
-
-          let row = Math.floor(bills.length/3) + 1;
-          // let i = 0;
-
-          this.tableNumbers = [];
-          for(let i = 0; i < row; i++){
-            let sub = [];
-            for(let j = 0; j < 3; j++){
-              if(this.bills[j + (i * 3)])
-                sub.push(this.bills[j + (i * 3)]);
-            }
-            this.tableNumbers.push(sub);
+          console.log("bills", this.bills);
+          },
+          err =>{
+            console.log(err);
           }
-          console.log(this.tableNumbers);
-        },
-        err =>{
-          console.log(err);
-        }
-        )
+          )
     }
 
     openPaymentModal(tableNumber, billId){
@@ -118,4 +141,24 @@ import { OrderService } from '../../providers/order-service';
     }
 
 
+    getTable(){
+      this.orderService.getTable().subscribe(
+        tableZones =>{
+          this.tableZones = tableZones;
+          // this.allTable = tableZone ? tableZone : [];
+        },
+        err =>{
+          console.log(err);
+        }
+
+        );
+    }
+
+    isIn(zone, table){
+      // console.log(this.bills);
+      // console.log(zone, table);
+      let t = JSON.stringify({zone: zone, table: table});
+      let index = this.bills.map(tableZone =>{return JSON.stringify(tableZone);}).indexOf(t);
+      return index > -1 ? true : false;
+    }
   }
