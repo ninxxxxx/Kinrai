@@ -17,6 +17,7 @@ var Category = require("./models/category");
 var Type = require("./models/type");
 var Food = require("./models/food");
 var Topping = require("./models/topping");
+var TableZone = require('./models/tablezone')
 
 
 
@@ -35,6 +36,8 @@ app.use(function(req, res, next) {
 });
 
 
+port = 8080;
+
 getIpAddress = function(){
 	let ip;
 	Object.keys(ifaces).forEach(function (ifname) {
@@ -50,7 +53,7 @@ getIpAddress = function(){
 			// ++alias;
 		});
 	});
-	return ip;
+	return "http://" + ip + ":" + port;
 }
 
 console.log(getIpAddress());
@@ -95,7 +98,7 @@ io.on('connection', function(socket){
 	socket.on('check lock bill', function(msgs){
 		let m = JSON.parse(msgs); 
 		if(m.table_number){
-			let l = lockedBills.map(table =>{return table}).indexOf(m.table_number);
+			let l = lockedBills.map(table =>{return JSON.stringify(table)}).indexOf(JSON.stringify(m.table_number));
 			if(l > -1){
 				socket.emit('check lock bill', JSON.stringify({m:"lock", t:m.table_number, i:""}));
 			}else{
@@ -114,7 +117,7 @@ io.on('connection', function(socket){
 	socket.on('unlock table', function(msgs){
 		let m = JSON.parse(msgs);
 
-		let i = lockedBills.map(table =>{return table}).indexOf(m.t);
+		let i = lockedBills.map(table =>{return JSON.stringify(table)}).indexOf(JSON.stringify(m.t));
 		let j = lockedUntitled.map(billId =>{return billId}).indexOf(m.i);
 		// console.log("require table: " + table);
 		// console.log(lockedBills);
@@ -159,7 +162,7 @@ io.on('connection', function(socket){
 	});
 });
 
-server.listen(8080);
+server.listen(port);
 
 
 
@@ -317,7 +320,7 @@ app.post('/newfood',(req, res)=>{
 		let newPath = __dirname + "/uploads/images/foods/" + image.title;
 		let newData = new Buffer(image.data, "binary");
 		fs.writeFileSync(newPath, newData);
-		food.img_url = "http://" + getIpAddress() + ":8080" + "/uploads/images/foods/" + image.title; 
+		food.img_url = "uploads/images/foods/" + image.title; 
 	}
 	Type.findById(food.type, (err, type)=>{
 		type.foods.push(food);
@@ -395,7 +398,7 @@ app.post('/newfood',(req, res)=>{
 
 
 		dateForFind = new Date();
-		dateForFind.setHours(dateForFind.getHours() - 7);
+		dateForFind.setHours(dateForFind.getHours() - 7);//i think it's wrong because it backward for 7hrs not forward 
 		dateForFind.setMinutes(0);
 		dateForFind.setSeconds(0);
 		console.log("DateForFind " + dateForFind);
@@ -438,7 +441,7 @@ app.post('/newfood',(req, res)=>{
 
 	app.get('/orders/', function(req, res){
 		// Order.find({ $or:[{status: "waiting"}, {status: "doing"}] }).populate('food').populate('bill').exec(
-		Order.find({ status:{$in:["waiting", "doing"]} }).populate('food').populate('bill').exec(
+		Order.find({ status:{$in:["waiting", "cooking", "ready"]} }).populate('food').populate('bill').exec(
 			(err, orders)=>{
 				if(err) throw err;
 				// console.log(orders);
@@ -450,7 +453,7 @@ app.post('/newfood',(req, res)=>{
 		let chosenCats = req.body.chosenCats;
 		console.log(chosenCats);
 		// chosenCats.map(cat =>{ cat = new });
-		Order.find({ status:{$in:["waiting", "doing"]} })
+		Order.find({ status:{$in:["waiting", "cooking", "ready"]} })
 		.populate({
 			path:'food',
 			populate:{
@@ -501,14 +504,16 @@ app.post('/newfood',(req, res)=>{
 	});
 
 	app.get('/bills/table_number/', function(req, res){
-		Bill.find({is_paid:false}).distinct('table_number', {table_number:{$ne:"Individual"}})
+		Bill.find({is_paid:false})
+		.distinct('table_number', {table_number:{$ne:"Individual"}})
+		// .sort({table_number: 1})
 		.exec((err, bills)=>{
-			if(err) throw err;
+			if(err) throw err;  
 			res.json(bills);
 		});
 	});
-	app.get('/bills/table_number/:tableNumber', function(req, res){
-		let table_number = req.params.tableNumber;
+	app.post('/bills/table_number/', function(req, res){
+		let table_number = req.body.tableNumber;
 
 		Bill.find({table_number: table_number, is_paid:false}).populate({path:'orders', populate:{path:'food'}}).exec((err, bills)=>{
 			if(err) throw err;
@@ -531,7 +536,7 @@ app.post('/newfood',(req, res)=>{
 	});
 
 	app.get('/bills/untitled/', (req, res) =>{
-		Bill.find({table_number:"Individual", is_paid:false})
+		Bill.find({'table_number.zone':"takeout", is_paid:false})
 		.populate({path:'orders', populate:{path:'food'}})
 		.exec((err, bills) =>{
 			if(err) throw err;
@@ -540,9 +545,112 @@ app.post('/newfood',(req, res)=>{
 	});
 
 
+	app.get('/tables/', (req, res) =>{
+		TableZone.find({}, (err, tableZones) =>{
+			if(err) throw err;
+			res.json(tableZones);
+		})
+	})
+
+	app.post('/tables/new/', (req, res) =>{
+		// console.log(req.body);
+		let tableZone = new TableZone();
+		tableZone.zone = req.body.zone;
+		tableZone.tables = req.body.tables;
+		tableZone.save(err =>{
+			if(err) throw err;
+			console.log("") 
+			res.json("save");
+		})
+		// console.log(tableZone);
+	})
 
 
+	app.get('/sales/getByDate', (req, res)=>{
+		// let date = new Date();
+		// console.log("date.getHours()", date.getHours());
+		// Bill.find({}, function(err, bills){
+		// 	bills.map(bill=>{console.log(bill.date.getHours())});
+		// 	res.json(bills);
+		// })
 
+		let start = new Date("04/24/17");
+		let end = new Date("04/24/17");
+		// console.log(new Date("04/23/17"));
+		start.setHours(0);
+		start.setMinutes(0);
+		start.setSeconds(0);
+		end.setHours(23);
+		end.setMinutes(59);
+		end.setSeconds(59);
+		console.log("start.getHours()", start.getHours());
+		console.log("end.getHours()", end.getHours());
+
+		// res.json({date:start, date2:end})
+		// console.log("Date", date);
+		// Bill.find({date:{$gte: start, $lte: end}}, function(err, bills){
+		// 	res.json(bills);
+		// })
+
+		Order.aggregate([
+			{$match: {
+				date: {$gte: start, $lte: end}
+			}},
+			{$unwind: "$food"},
+			{$lookup: {
+				from: "foods",
+				localField: "food",
+				foreignField: "_id",
+				as: "foodObject"
+			}},
+			{$group:{
+				_id: {
+					_id: "$foodObject._id",
+					title: "$foodObject.title"
+				},
+				amount: {$sum: "$amount"}
+			}},
+			{$project:{
+				_id: "$_id._id",
+				title: "$_id.title",
+				amount: 1
+			}},
+			{$sort: {amount: -1}}
+			]).exec(function(err, foods){
+				Bill.aggregate([
+					{$match: {
+						date: {$gte: start, $lte: end}
+					}},
+					{$group:{
+						_id: null,
+						total_bills: {$sum: 1},
+						total_sales: { $sum: "$total_price"},
+					}}
+					])
+				.exec(function(err, sale_history){
+					Bill.find({date: {$gte: start, $lte: end}}, {date: 1, total_price: 1})
+					.exec(function(err, bills){
+						res.json(bills);
+					})
+					// Bill.aggregate([
+					// 	{$match: {
+					// 		date: {$gte: start, $lte: end}
+					// 	}},
+					// 	{$group:{
+					// 		_id:{
+					// 			hours: {$hour: '$date'}
+					// 		},
+					// 		sale: {$sum: '$total_price'}
+					// 	}}
+					// 	])
+					// .exec(function(err, bills){
+					// 	res.json(bills);
+					// })
+					// res.json({sales: sale_history, foods: foods});
+					
+				})			
+			})
+		})
 
 
 

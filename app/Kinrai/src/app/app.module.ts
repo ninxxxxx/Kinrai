@@ -10,6 +10,9 @@ import { FileChooser } from '@ionic-native/file-chooser';
 import { FilePath } from '@ionic-native/file-path';
 import { DatePicker } from '@ionic-native/date-picker';
 
+//external libs
+import {ChartsModule} from 'ng2-charts/ng2-charts';
+
 //component
 import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
 import { ModalAddOptionComponent } from '../components/modal-add-option/modal-add-option';
@@ -33,6 +36,7 @@ import { TablePage } from '../pages/table/table';
 import { SelectTablePage } from '../pages/select-table/select-table';
 import { SaleHistoryPage } from '../pages/sale-history/sale-history';
 
+import '../../node_modules/chart.js/src/chart.js';
 
 
 @NgModule({
@@ -60,6 +64,7 @@ import { SaleHistoryPage } from '../pages/sale-history/sale-history';
   SaleHistoryPage
   ],
   imports: [
+  ChartsModule,
   HttpModule,
   BrowserModule,
   IonicModule.forRoot(MyApp)

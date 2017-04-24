@@ -16,8 +16,8 @@ import { SaleHistoryPage }  from '../pages/sale-history/sale-history';
   templateUrl: 'app.html'
 })
 export class MyApp {
-  // rootPage = TabsPage;
-  rootPage = SaleHistoryPage;
+  rootPage = TabsPage;
+  // rootPage = SaleHistoryPage;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
 
   @ViewChild(Nav) nav: Nav;
