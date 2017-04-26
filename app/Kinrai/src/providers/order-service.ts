@@ -15,8 +15,8 @@ import {ToastController} from 'ionic-angular';
 
   	constructor(public toastCtrl: ToastController, private http: Http) {
 
-      this.server = 'http://172.30.230.103:8080/';//lan
-      // this.server = 'http://192.168.137.1:8080/';//wifi
+      // this.server = 'http://172.30.89.14:8080/';
+      this.server = 'http://172.30.230.103:8080/';
 
     }
 
@@ -186,7 +186,9 @@ import {ToastController} from 'ionic-angular';
     }
     //Sh = Sales History 
     getShOfDay(date){
-      
+      let url = this.server + 'sales/getByDate';
+      let response = this.http.post(url, {date: date}).map(res => res.json());
+      return response;
     }    
 
   }

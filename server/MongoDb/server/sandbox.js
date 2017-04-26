@@ -1,5 +1,5 @@
-date = new Date()
-date2 = date;
-console.log(date);
-date2.setMinutes(date2.getMinutes() + 60);
-console.log(date2);
+let l = [];
+if(l.length)
+	console.log("yes");
+else
+	console.log("no");

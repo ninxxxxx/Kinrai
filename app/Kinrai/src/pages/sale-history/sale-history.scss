@@ -1,3 +1,9 @@
 page-sale-history {
-
+	.header-md::after {
+		background-image: none;
+	}
+	ion-segment{
+		padding-left: 8px;
+		padding-right: 8px;
+	}
 }

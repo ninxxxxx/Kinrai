@@ -13,12 +13,19 @@ import { DatePicker } from '@ionic-native/date-picker';
 //external libs
 import {ChartsModule} from 'ng2-charts/ng2-charts';
 
+
+
+//providers
+import { OrderService } from '../providers/order-service';
+
+
 //component
 import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
 import { ModalAddOptionComponent } from '../components/modal-add-option/modal-add-option';
 import { ModalAddOrderComponent } from '../components/modal-add-order/modal-add-order';
 import { OrderListComponent } from '../components/order-list/order-list';
 import { ModalPaymentComponent } from '../components/modal-payment/modal-payment';
+import { SalesGraph } from '../components/sales-graph/sales-graph';
 //Pages
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 import { FoodTypePage } from '../pages/food-type/food-type';
@@ -35,6 +42,7 @@ import { PreodersPage } from '../pages/preoders/preoders';
 import { TablePage } from '../pages/table/table';
 import { SelectTablePage } from '../pages/select-table/select-table';
 import { SaleHistoryPage } from '../pages/sale-history/sale-history';
+import { FoodRanking } from '../pages/food-ranking/food-ranking';
 
 import '../../node_modules/chart.js/src/chart.js';
 
@@ -61,7 +69,9 @@ import '../../node_modules/chart.js/src/chart.js';
   PreodersPage,
   TablePage,
   SelectTablePage,
-  SaleHistoryPage
+  SaleHistoryPage,
+  SalesGraph,
+  FoodRanking
   ],
   imports: [
   ChartsModule,
@@ -91,10 +101,12 @@ import '../../node_modules/chart.js/src/chart.js';
   PreodersPage,
   TablePage,
   SelectTablePage,
-  SaleHistoryPage
+  SaleHistoryPage,
+  SalesGraph,
+  FoodRanking
   ],
   providers: [
-  {provide: ErrorHandler, useClass: IonicErrorHandler}, File, FileChooser, FilePath, DatePicker
+  {provide: ErrorHandler, useClass: IonicErrorHandler}, File, FileChooser, FilePath, DatePicker, OrderService
   ]
 })
 export class AppModule {}

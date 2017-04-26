@@ -15,7 +15,7 @@ import { OrderService } from '../../providers/order-service';
   @Component({
   	selector: 'page-bill',
   	templateUrl: 'bill.html',
-  	providers:[OrderService]
+  	// providers:[OrderService]
   })
   export class BillPage {
 

@@ -4,9 +4,6 @@ import { Platform, Nav, Tabs } from 'ionic-angular';
 // import { Splashscreen } from '@ionic-native/splashscreen';
 
 import { TabsPage } from '../pages/tabs/tabs';
-import { OrderMainPage } from '../pages/order-main/order-main';
-import { ManagementPage } from '../pages/management/management';
-import { ModalAddFoodComponent } from '../components/modal-add-food/modal-add-food';
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 import { TablePage } from '../pages/table/table';
 import { SaleHistoryPage }  from '../pages/sale-history/sale-history';
@@ -16,8 +13,8 @@ import { SaleHistoryPage }  from '../pages/sale-history/sale-history';
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage = TabsPage;
-  // rootPage = SaleHistoryPage;
+  // rootPage = TabsPage;
+  rootPage = SaleHistoryPage;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
 
   @ViewChild(Nav) nav: Nav;

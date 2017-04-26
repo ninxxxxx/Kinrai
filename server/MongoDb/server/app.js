@@ -566,25 +566,25 @@ app.post('/newfood',(req, res)=>{
 	})
 
 
-	app.get('/sales/getByDate', (req, res)=>{
+	app.post('/sales/getByDate', (req, res)=>{
 		// let date = new Date();
 		// console.log("date.getHours()", date.getHours());
 		// Bill.find({}, function(err, bills){
 		// 	bills.map(bill=>{console.log(bill.date.getHours())});
 		// 	res.json(bills);
 		// })
-
-		let start = new Date("04/24/17");
-		let end = new Date("04/24/17");
-		// console.log(new Date("04/23/17"));
+		// let date = new Date(req.body.date);
+		console.log(req.body.date);
+		let start = new Date(req.body.date);
+		let end = new Date(req.body.date);
 		start.setHours(0);
 		start.setMinutes(0);
 		start.setSeconds(0);
 		end.setHours(23);
 		end.setMinutes(59);
 		end.setSeconds(59);
-		console.log("start.getHours()", start.getHours());
-		console.log("end.getHours()", end.getHours());
+		// console.log("start.getHours()", start.getHours());
+		// console.log("end.getHours()", end.getHours());
 
 		// res.json({date:start, date2:end})
 		// console.log("Date", date);
@@ -606,13 +606,15 @@ app.post('/newfood',(req, res)=>{
 			{$group:{
 				_id: {
 					_id: "$foodObject._id",
-					title: "$foodObject.title"
+					title: "$foodObject.title",
+					img_url: "$foodObject.img_url"
 				},
 				amount: {$sum: "$amount"}
 			}},
 			{$project:{
 				_id: "$_id._id",
 				title: "$_id.title",
+				img_url: "$_id.img_url",
 				amount: 1
 			}},
 			{$sort: {amount: -1}}
@@ -628,25 +630,30 @@ app.post('/newfood',(req, res)=>{
 					}}
 					])
 				.exec(function(err, sale_history){
-					Bill.find({date: {$gte: start, $lte: end}}, {date: 1, total_price: 1})
-					.exec(function(err, bills){
-						res.json(bills);
-					})
-					// Bill.aggregate([
-					// 	{$match: {
-					// 		date: {$gte: start, $lte: end}
-					// 	}},
-					// 	{$group:{
-					// 		_id:{
-					// 			hours: {$hour: '$date'}
-					// 		},
-					// 		sale: {$sum: '$total_price'}
-					// 	}}
-					// 	])
+					// Bill.find({date: {$gte: start, $lte: end}}, {date: 1, total_price: 1})
 					// .exec(function(err, bills){
 					// 	res.json(bills);
 					// })
-					// res.json({sales: sale_history, foods: foods});
+					Bill.aggregate([
+						{$match: {
+							date: {$gte: start, $lte: end}
+						}},
+						{$group:{
+							_id:{
+								hours: {$hour: '$date'}
+							},
+							sale: {$sum: '$total_price'}
+						}},
+						{$project:{
+							_id: null,
+							hours: "$_id.hours",
+							sale: 1
+						}},
+						{$sort: {hours: 1}}
+						])
+					.exec(function(err, bills){
+						res.json({summary: sale_history, foodRanking: foods, salesPerHour: bills});
+					})
 					
 				})			
 			})
