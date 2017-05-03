@@ -4,7 +4,7 @@
       <ion-icon md="md-menu"></ion-icon>
     </button>
     <ion-title>
-      Now Orders
+      Order Status
     </ion-title>
   </ion-navbar>
 
@@ -23,15 +23,16 @@
   </ion-item>
   <!-- {{orders|json}} -->
   <ion-list>
-    <ion-item style="padding-left: 0px;" *ngFor="let order of orders">
+    <ion-item style="padding-left: 0px;" *ngFor="let order of orders; let i = index ">
       <ion-grid style="margin-left: 8px;">
-        <ion-row>
+        <ion-row (click)="changeCurItem(i)">
           <ion-col><h1>{{order.food.title}}</h1></ion-col>
           <ion-col style="text-align: right;">
             <h3>Table No.{{order.bill.table_number.zone}}_{{order.bill.table_number.table}}</h3>
             <h5>{{order.bill.bill_number}}</h5>
           </ion-col>
         </ion-row>
+        <div *ngIf="i == currentItem">
         <ion-row>
           <ion-col>
             <h2>Place: {{order.togo ? "To Go" : "For Here"}}</h2>
@@ -63,6 +64,7 @@
             </button>
           </ion-col>
         </ion-row>
+        </div>
       </ion-grid>
     </ion-item>
   </ion-list>

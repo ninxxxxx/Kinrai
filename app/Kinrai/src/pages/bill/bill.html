@@ -43,17 +43,17 @@
 		<div *ngSwitchCase="'table'">
 			<ion-list *ngFor="let tableZone of tableZones">
 				<ion-list-header style="background-color: #465267; margin-bottom: 0px; box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);">
-					<h2 style="color: #ffffff">
+					<h2 style="color: #ffffff; padding-left: 16px;">
 						Zone: {{tableZone.zone}}
 					</h2>
 					<!-- <ion-icon item-right name="ios-arrow-down"></ion-icon> -->
 				</ion-list-header>
 				<ion-grid>
-					<ion-row wrap>
-						<ion-col width-25 *ngFor="let table of tableZone.tables" style="text-align: center;">
+					<ion-row >
+						<ion-col col-3 *ngFor="let table of tableZone.tables" style="text-align: center;">
 							<ion-card (click)="openPaymentModal({zone: tableZone.zone, table: table}, '')">
-								<ion-item style="text-align: center;">
-									{{table}}
+								<ion-item style="text-align: center; padding-left: 16px;">
+									<span>{{table}}</span>
 								</ion-item>
 							</ion-card>
 							<ion-icon style="color: #757575;" [name]="isIn(tableZone.zone, table) ? 'radio-button-on' : 'radio-button-off'"></ion-icon>

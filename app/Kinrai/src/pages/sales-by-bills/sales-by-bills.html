@@ -1,0 +1,47 @@
+<!--
+  Generated template for the SalesByBills page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header style="padding-right: 16px; padding-left: 16px;">
+	<div>
+		<ion-item no-lines>
+			<b style="font-size: 1.5em; color: #F8971D;">24/04/2016</b>
+			<!-- <b style="margin-right:0px; color: #F8971D;" item-right>total: {{total_price}}</b> -->
+		</ion-item>
+	</div>	
+<!-- 	<ion-navbar color="jaa" style="padding-right: 16px; padding-left: 16px;">
+</ion-navbar> -->
+
+</ion-header>
+
+
+<ion-content>
+	<ion-item-group *ngFor="let bill of bills">
+		<ion-item-divider style="background-color: #f8f8f8; padding-left: 16px; padding-right: 16px;">
+			<b style="color: black;" item-left>{{bill.bill_number}}</b>
+			<b style="color: black;" item-right>{{bill.orders.length}}</b>
+		</ion-item-divider>
+		<ion-item no-lines *ngFor="let order of bill.orders" style="padding-left: 16px; padding-right: 16px;">
+			<span style="margin-top: 0px; margin-bottom: 0px;">{{order.food.title}} ({{order.amount}})</span>
+			<span item-right style="margin-right: 0px; margin-bottom: 0px; margin-top: 0px;">{{order.food.price * order.amount}}.-</span>
+		</ion-item>
+		<ion-item-divider style="padding-left: 16px; padding-right: 16px;">
+			<b style="color: black;" item-left>Total</b>
+			<b style="color: black;" item-right>{{bill.total_price}}.-</b>
+		</ion-item-divider>
+	</ion-item-group><br>
+</ion-content>
+
+<ion-footer color="jaa">
+	<ion-grid>
+		<ion-row>
+			<ion-col style="text-align: right;">
+				<b style="font-size: 1.5em; color: #F8971D; margin: 16px;">
+					Total: {{total_price}}
+				</b>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+</ion-footer>

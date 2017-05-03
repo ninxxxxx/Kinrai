@@ -137,6 +137,12 @@ import {ToastController} from 'ionic-angular';
       return response;  
     }
 
+    updateBill(bill){
+      let url = this.server + 'bill/update';
+      let response = this.http.post(url, {bill:bill}).map(res => res.json());
+      return response;   
+    }
+
     getTableNumbers(){
       let header = new Headers({ 'content-type' : 'application/json', 'Access-Control-Allow-Origin': '*' });
       let options = new RequestOptions({ headers: header});
@@ -169,6 +175,12 @@ import {ToastController} from 'ionic-angular';
       return response;     
     }
 
+    removeBill(id){
+      let url = this.server + 'bills/remove/';
+      let response = this.http.post(url, {id}).map(res => res.json());
+      return response;      
+    }
+
 
 
     // ==============================================================================================
@@ -185,10 +197,14 @@ import {ToastController} from 'ionic-angular';
       return response;            
     }
     //Sh = Sales History 
-    getShOfDay(date){
+    getShOfDay(date, type){
       let url = this.server + 'sales/getByDate';
-      let response = this.http.post(url, {date: date}).map(res => res.json());
+      let response = this.http.post(url, {date: date, type: type}).map(res => res.json());
       return response;
     }    
-
+    getBillsByDate(date, type){
+      let url = this.server + 'sales/getBillsByDate';
+      let response = this.http.post(url, {date: date, type: type}).map(res => res.json());
+      return response;
+    }
   }

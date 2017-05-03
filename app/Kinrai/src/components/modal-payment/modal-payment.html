@@ -22,7 +22,7 @@
 	<ion-grid style="padding-bottom: 0px;">
 		<ion-row style="padding-bottom: 0px;">
 			<ion-col style="text-align: center;">
-				<h1 style="margin-bottom: 0px;">Table Number: {{tableNumber.zone + '_' + tableNumber.table}}</h1>
+				<h1 style="margin-bottom: 0px; margin-top: 0px;">Table Number: {{tableNumber.zone + '_' + tableNumber.table}}</h1>
 			</ion-col>
 		</ion-row>
 	</ion-grid>
@@ -31,10 +31,10 @@
 			<ion-grid style="margin-left: 8px;">
 				<ion-row>
 					<ion-col style="text-align: left;">
-						<h2 >Bill: {{bill.bill_number}}</h2>
+						<h2 (click)="gotoOrderSummary(bill)">Bill: {{bill.bill_number}}</h2>
 					</ion-col>
 				</ion-row>
-				<ion-row *ngFor="let order of bill.orders">
+				<ion-row *ngFor="let order of bill.orders" (click)="gotoOrderSummary(bill)">
 					<ion-col style="text-align: left;">
 						<h2 >{{order.food.title}}({{order.amount}})</h2>
 						<span style="font-size: small" *ngFor="let topping of order.selected_toppings">
@@ -50,8 +50,16 @@
 						<h2 style="font-weight: bold;">Total</h2>	
 					</ion-col>
 					<ion-col>
-						<h2 style="font-weight: bold;">{{bill.total_price}}.-</h2>
+						<h2 style="font-weight: bold; text-align: right;">{{bill.total_price}}.-</h2>
 					</ion-col>
+					<ion-col style="text-align: right;">
+						<ion-icon name="trash" (click)="removeBillAlert(bill._id)"></ion-icon>
+					</ion-col>
+<!-- 					<ion-col>
+						<button ion-button clear>
+							<ion-icon name="close"></ion-icon>
+						</button>
+					</ion-col> -->
 				</ion-row>
 			</ion-grid>
 		</ion-item>
@@ -60,30 +68,49 @@
 </ion-content>
 
 <ion-footer>
-	<ion-row >
-		<ion-col style="text-align: right;">
-			<h1 style="margin-top: 6px; margin-bottom: 0px;">Total: </h1>
-		</ion-col>
-		<ion-col style="text-align: left;">
-			<h1 style="margin-top: 6px; margin-bottom: 0px;">{{totalPrice}}.-</h1>
-		</ion-col>
-	</ion-row>
-	<ion-row>
-		<ion-col style="text-align: center;">
-			<ion-item no-lines>
-				<ion-label inline>Recieve</ion-label>
-				<ion-input [(ngModel)]="recvMoney"></ion-input>
-			</ion-item>
-		</ion-col>
-		<ion-col style="text-align: center;">
-			<h3>Change : {{recvMoney-totalPrice > 0 ? recvMoney-totalPrice : 0}}</h3>
-		</ion-col>
-	</ion-row>
-	<ion-row>
-		<ion-col style="padding-top: 0px;">
-			<!-- <button block ion-button round style="background-image: linear-gradient(-60deg, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
-			<button block ion-button round color="green" (click)="confirmAlert()">OK</button>
-			<!-- <button block ion-button round style="background-image: linear-gradient(to top, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
-		</ion-col>
-	</ion-row>                      
+<ion-grid style="background-color: white;">
+		<ion-row >
+			<ion-col col-2  style="text-align: right;">
+			</ion-col>
+			<ion-col col-8 style="text-align: center;">
+				<!-- <h1 style="margin-top: 6px; margin-bottom: 0px;">Total: </h1> -->
+				<h1 style="margin-top: 6px; margin-bottom: 0px;">Total: {{totalPrice}}.-</h1>
+			</ion-col>
+			<ion-col col-2 style="text-align: right;" (click)="toggleHelp()">
+				<button ion-button clear>
+					<ion-icon *ngIf="isToggle" name="ios-arrow-down"></ion-icon>
+					<ion-icon *ngIf="!isToggle" name="ios-arrow-up"></ion-icon>
+				</button>
+			</ion-col>
+		</ion-row>
+		<ion-row *ngIf="isToggle">
+			<ion-col style="text-align: center;">
+				<ion-item no-lines>
+					<ion-label inline>People</ion-label>
+					<ion-input [(ngModel)]="people"></ion-input>
+				</ion-item>
+			</ion-col>
+			<ion-col style="text-align: center;">
+				<h3>Each : {{totalPrice/people}}</h3>
+			</ion-col>
+		</ion-row>
+		<ion-row *ngIf="isToggle">
+			<ion-col style="text-align: center;">
+				<ion-item no-lines>
+					<ion-label inline>Recieve</ion-label>
+					<ion-input [(ngModel)]="recvMoney"></ion-input>
+				</ion-item>
+			</ion-col>
+			<ion-col style="text-align: center;">
+				<h3>Change : {{recvMoney-totalPrice > 0 ? recvMoney-totalPrice : 0}}</h3>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col style="padding-top: 0px;">
+				<!-- <button block ion-button round style="background-image: linear-gradient(-60deg, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
+				<button block ion-button round color="green" (click)="confirmAlert()">OK</button>
+				<!-- <button block ion-button round style="background-image: linear-gradient(to top, #0fd850 0%, #f9f047 100%);" (click)="confirmAlert()">OK</button> -->
+			</ion-col>
+		</ion-row>   
+	</ion-grid>                   
 </ion-footer>

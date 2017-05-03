@@ -38,16 +38,13 @@ export class OrderSummaryPage {
 		this.totalPrice = 0;
 		
 		this.bill = this.navParams.get('bill');
+		console.log(this.bill);
 		if(this.bill){
 			this.tableNumber = this.bill.bill.table_number;
 			this.orders = this.bill.bill.orders;
 			this.totalPrice = this.bill.bill.total_price;
 			this.calWaitTime();
-		}else{
-			this.openNewOrder();
 		}
-
-
 		this.socket = io(this.orderService.server);
 
 	}
@@ -63,7 +60,8 @@ export class OrderSummaryPage {
 	openNewOrder(){
 		let modal = this.modalCtrl.create(ModalAddOrderComponent);
 		modal.onDidDismiss(order =>{
-			if(order){
+			console.log("order ===> ",order);
+			if(order != undefined){
 				console.log("order: ");		
 				console.log(order);
 				this.orders.push(order);
@@ -93,14 +91,33 @@ export class OrderSummaryPage {
 				this.toast(err);
 			}
 			);
-		setTimeout(()=>{
-			if(this.bill){
-				this.socket.emit("remove pre-order", this.bill.id);
-			}
-			this.socket.emit("orders changed", "...");
-			this.socket.emit("bills changed", "...");
+		if(this.bill){
+			setTimeout(()=>{
+				if(this.bill.id != ""){
+					this.socket.emit("remove pre-order", this.bill.id);
+				}
+				this.socket.emit("orders changed", "...");
+				this.socket.emit("bills changed", "...");
+				this.viewCtrl.dismiss();
+			},250);
+		}else{
 			this.viewCtrl.dismiss();
-		},250);
+		}
+	}
+
+	updateBill(){
+		this.bill.bill.table_number = this.tableNumber;
+		this.bill.bill.orders = this.orders
+		this.bill.bill.total_price = this.totalPrice;
+		this.orderService.updateBill(this.bill.bill).subscribe(
+			res =>{
+				this.toast("updated");
+				console.log(res);
+			},
+			err =>{
+				console.log(err);
+			});
+		this.viewCtrl.dismiss();
 	}
 
 	toast(messages){
@@ -119,10 +136,12 @@ export class OrderSummaryPage {
 	}
 	calTotalPrice(){
 		this.totalPrice = 0;
+
 		this.orders.map(order =>{
-			this.totalPrice += (order.price*order.amount);
+			this.totalPrice += (order.price* parseInt(order.amount));
 			// order.selected_toppings.map(top =>{ this.totalPrice += (top.price*order.amount)});
 		});
+		console.log(this.totalPrice);
 	}
 
 	editOrder(order){
@@ -133,6 +152,8 @@ export class OrderSummaryPage {
 			console.log("==>");
 			console.log(order);
 			this.orders[this.editIndex] = order;
+			this.calTotalPrice();
+			this.calWaitTime();
 		});
 		modal.present();
 	}
@@ -148,5 +169,13 @@ export class OrderSummaryPage {
 			this.tableNumber = tableNumber ? tableNumber : this.tableNumber; 
 		});
 		modal.present();
+	}
+
+	test(){
+		console.log("test test");
+	}
+
+	removeOrder(index){
+		this.orders.splice(index, 1);
 	}
 }

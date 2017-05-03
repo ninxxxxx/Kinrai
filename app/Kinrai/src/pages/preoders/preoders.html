@@ -10,7 +10,7 @@
 		<button ion-button icon-left menuToggle>  
 			<ion-icon md="md-menu"></ion-icon>
 		</button>
-		<ion-title>Pre-Orders</ion-title>
+		<ion-title>Comming Orders</ion-title>
 	</ion-navbar>
 
 </ion-header>
@@ -20,13 +20,13 @@
 	<div>
 		
 		<ion-list #items>
-			<button ion-item *ngFor="let b of bills" (click)="openSummaryOrder(b)">
+			<button style="padding-left: 16px;" ion-item *ngFor="let b of bills" (click)="openSummaryOrder(b)">
 				<h2>{{'Zone: ' + b.bill.table_number.zone + ' Table: ' + b.bill.table_number.table}}</h2>
 				<span *ngFor="let order of b.bill.orders"> {{order.food.title}} |</span>
 			</button>
 		</ion-list>
-		<ion-item style="padding-left: 0px; text-align: center;">
-			pre-order is empty
+		<ion-item *ngIf="!bills.length" style="padding-left: 0px; text-align: center;">
+			No Comming Orders
 		</ion-item>
 	</div>
 

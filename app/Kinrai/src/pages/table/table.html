@@ -15,9 +15,11 @@
 
 <ion-content>
 	<ion-fab bottom right>
-		<button (click)="newTableZone()" ion-fab color="light">+</button>
+		<button (click)="newTableZone()" ion-fab color="light">
+			<ion-icon name="add"></ion-icon>
+		</button>
 	</ion-fab>
-	<ion-item *ngFor="let zone of allTable">
+	<ion-item *ngFor="let zone of allTable" style="padding-left: 16px; padding-right: 16px;">
 		Zone: {{zone.zone}}
 		Total: {{zone.tables.length}} 
 	</ion-item>

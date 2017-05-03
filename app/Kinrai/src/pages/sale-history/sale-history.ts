@@ -8,6 +8,7 @@ import { OrderService } from '../../providers/order-service';
 import { UtilsService } from '../../providers/utils-service';
 
 import { FoodRanking } from '../../pages/food-ranking/food-ranking';
+import { SalesByBills } from '../../pages/sales-by-bills/sales-by-bills';
 /*
   Generated class for the SaleHistory page.
 
@@ -35,9 +36,13 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
     
     public currentTab;
     public currentDate;
+    public monthYear;
 
     total_price: number = 0;
     ranking: Array<any> = [{title:[""]}, {title:[""]}, {title:[""]}];
+
+
+
     constructor(
       private orderService: OrderService,
       public navCtrl: NavController, 
@@ -50,7 +55,9 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
       this.labels = ["0", "1", "2", "3"];
       this.currentDate = new Date();
       this.currentTab = "day";
-      this.chooseSaleByDate(this.currentDate);  
+      this.monthYear = new Date();
+      this.monthYear = this.monthYear.toISOString(); 
+      this.chooseSaleByDate(this.currentDate, this.currentTab);  
     }
 
     ionViewDidLoad() {
@@ -65,7 +72,7 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
       }).then(
       date => {
         this.currentDate = date
-        this.chooseSaleByDate(date);
+        this.chooseSaleByDate(date, this.currentTab);
       },
       err => console.log('Error occurred while getting date: ', err)
       );
@@ -75,8 +82,9 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
       this.currentTab = time;
     } 
     
-    chooseSaleByDate(date){
-      this.orderService.getShOfDay(date).subscribe(
+    chooseSaleByDate(date, type){
+
+      this.orderService.getShOfDay(date, type).subscribe(
         salesHistory=>{
           console.log("data is loaded", salesHistory);
           let graphData = salesHistory.salesPerHour;
@@ -86,10 +94,12 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
           let labels = [];
 
           if(summary){
-            graphData.map(pot=>{
-              pot.hours = ((pot.hours + 7) % 24);
-            })
-            graphData.sort((a, b)=> {return a.hours - b.hours});
+            if(this.currentTab == "day"){
+              graphData.map(pot=>{
+                pot.hours = ((pot.hours + 7) % 24);
+              })
+              graphData.sort((a, b)=> {return a.hours - b.hours});
+            }
             graphData.map(pot=>{
               data.push(pot.sale);
               labels.push(pot.hours);
@@ -115,5 +125,14 @@ import { FoodRanking } from '../../pages/food-ranking/food-ranking';
 
     openFoodRanking(){
       this.navCtrl.push(FoodRanking, {foodRank: this.ranking});
+    }
+    openShowBills(){
+      let date = this.currentTab == "day" ? this.currentDate : this.monthYear;
+      console.log(date);
+      this.navCtrl.push(SalesByBills, {date: date, type: this.currentTab});
+    }
+
+    test(text){
+      console.log(text);
     }
   }

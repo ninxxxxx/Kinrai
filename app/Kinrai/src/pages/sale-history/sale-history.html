@@ -7,17 +7,17 @@
 <ion-header no-shadow>
 	<ion-navbar color="jaa">
 		<ion-segment color="light" [(ngModel)]="currentTab">
-			<ion-segment-button value="day">
+			<ion-segment-button value="day" (click)="chooseSaleByDate(currentDate, currentTab)">
 				day
 			</ion-segment-button>
-			<ion-segment-button value="month">
+			<ion-segment-button value="month" (click)="chooseSaleByDate(monthYear, currentTab)">
 				month
 			</ion-segment-button>
-			<ion-segment-button value="year">
+			<ion-segment-button value="year" (click)="chooseSaleByDate(monthYear, currentTab)">
 				year
 			</ion-segment-button>
 		</ion-segment>
-		</ion-navbar>	
+	</ion-navbar>	
 </ion-header>
 
 
@@ -33,20 +33,18 @@
 			year
 		</ion-segment-button>
 	</ion-segment> -->
+	<!-- {{monthYear}} -->
 	<ion-grid>
 		<ion-row style="text-align: center;">
 			<ion-col *ngIf="currentTab == 'day'" >
 				<button ion-button clear style="border-width: 2px;" (click)="openDatePicker()">{{currentDate.getDate()}}/{{currentDate.getMonth()}}/{{currentDate.getFullYear()}}
 				</button>
 			</ion-col>
-			<ion-col *ngIf="currentTab == 'month'">
-				<button ion-button outline round style="border-width: 2px;">January</button>
-			</ion-col>
-			<ion-col *ngIf="currentTab == 'month'">
-				<button ion-button outline round style="border-width: 2px;">2017</button>
+			<ion-col *ngIf="currentTab == 'month'" style="text-align: center;">
+				<ion-datetime displayFormat="MMMM/YYYY" pickerFormat="MMMM YYYY" [(ngModel)]="monthYear" (ionChange)="chooseSaleByDate(monthYear , currentTab)"></ion-datetime>
 			</ion-col>
 			<ion-col *ngIf="currentTab == 'year'">
-				<button ion-button outline round style="border-width: 2px;">2017</button>
+				<ion-datetime displayFormat="YYYY" pickerFormat="YYYY" [(ngModel)]="monthYear" (ionChange)="chooseSaleByDate(monthYear, currentTab)"></ion-datetime>
 			</ion-col>
 		</ion-row>
 		<ion-row>
@@ -84,7 +82,7 @@
 		</ion-row>
 		<ion-row>
 			<ion-col style="text-align: center;">
-				<button ion-button clear >view Sales history</button>
+				<button ion-button clear (click)="openShowBills()">view Sales history</button>
 			</ion-col>
 		</ion-row>
 		<ion-row style="text-align: center;">

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { ToastController, AlertController, ViewController, NavParams } from 'ionic-angular';
+import { ToastController, AlertController, ViewController, NavParams, ModalController } from 'ionic-angular';
 
-
+import{ OrderSummaryPage } from '../../pages/order-summary/order-summary';
 import { OrderService } from '../../providers/order-service';
 /*
   Generated class for the ModalPayment component.
@@ -24,8 +24,11 @@ import { OrderService } from '../../providers/order-service';
     change: number;
     recvMoney: number;
 
+    people:number;
+    isToggle:boolean;
     socket: any;
     constructor(
+      public modalCtrl: ModalController,
       public toastCtrl: ToastController,
       public alertCtrl: AlertController,
       private viewCtrl: ViewController,
@@ -33,17 +36,15 @@ import { OrderService } from '../../providers/order-service';
       public navParams: NavParams
       ) 
     {
+      this.isToggle = false;
       // this.recvMoney = ;
+      this.people = 1;
       this.change = 0;
       this.totalPrice = 0;
       this.tableNumber = this.navParams.get('tableNumber');
       this.billId = this.navParams.get('bill_id');
       this.bills = [];
-      if(this.tableNumber)
-        this.getBillsFromTable();
-      if(this.billId)
-        this.getBillFromId();
-
+      this.checkAndGetBill();
 
 
       this.socket = io(this.orderService.server);
@@ -56,6 +57,12 @@ import { OrderService } from '../../providers/order-service';
         });
     }
 
+    checkAndGetBill(){
+      if(this.tableNumber)
+        this.getBillsFromTable();
+      if(this.billId)
+        this.getBillFromId();      
+    }
 
     getBillFromId(){
       this.orderService.getBillFromId(this.billId).subscribe(
@@ -90,6 +97,7 @@ import { OrderService } from '../../providers/order-service';
     }
 
     sumBillPrice(){
+      this.totalPrice = 0;
       this.bills.forEach(bill =>{this.totalPrice += bill.total_price});
     }
 
@@ -117,6 +125,44 @@ import { OrderService } from '../../providers/order-service';
       });
       alert.present();
     }
+    removeBillAlert(id){
+      let billId = id
+      let alert = this.alertCtrl.create({
+        title: "Delete this bill ?",
+        message: "Are you sure to delete this bill ?",
+        buttons:[
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            this.removeBill(billId);
+            // console.log('checked bill clicked');
+          }
+        }
+        ]
+      });
+      alert.present();
+    }
+
+    removeBill(id){
+      this.orderService.removeBill(id).subscribe(
+        res=>{
+          this.toast(res);
+          this.checkAndGetBill();
+          // console.log(res);
+        },
+        err =>{
+          console.log(err);
+        }
+        )
+    }
+
     checkBill(){
       let bill_ids = [];
       this.bills.map(bill =>{bill_ids.push(bill._id)});
@@ -143,5 +189,16 @@ import { OrderService } from '../../providers/order-service';
         duration: 500
       });
       toast.present();
+    }
+    gotoOrderSummary(bill){
+      let modal = this.modalCtrl.create(OrderSummaryPage, { bill: {id: "", bill: bill} });
+      modal.onDidDismiss(()=>{
+        this.checkAndGetBill();
+      });
+      modal.present();
+    }
+
+    toggleHelp(){
+      this.isToggle = !this.isToggle;
     }
   }

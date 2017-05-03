@@ -10,7 +10,7 @@
 			Add Order
 		</ion-title>
 		<ion-buttons end>
-			<button ion-button (click)="cancel()">
+			<button ion-button (click)="gotoOrderSummary()">
 				<ion-icon md="md-close"></ion-icon>
 			</button>
 		</ion-buttons>
@@ -22,13 +22,13 @@
 	<!-- {{food|json}} -->
 	<!-- {{server + food.img_url}} -->
 	<ion-img [hidden]="!food.img_url" width="400px" height="150px" src="{{server + food.img_url}}"></ion-img>
-	<button [hidden]="food.title" (click)="chooseFood()" block ion-button clear>select food</button>
-	<div style="padding-left: 16px;">
+	<!-- <button [hidden]="food.title" (click)="chooseFood()" block ion-button clear>select food</button> -->
+
+	<div style="padding-left: 16px; padding-right: 16px;">
 		<ion-list [hidden]="!food.title">
 
 			<ion-item class="left-out">
 				<h1>{{food.title}}</h1>
-				<button *ngIf="food.title" color="primary" style="margin-left: 0px; padding-left: 0px; padding-right: 0px;" ion-button clear (click)="chooseFood()">Change Food</button>
 			</ion-item>
 			<ion-item class="left-out">
 				<ion-grid>
@@ -96,9 +96,14 @@
 			</ion-col>			
 		</ion-row>
 		<ion-row>
-			<ion-col width-10></ion-col>
-			<ion-col width-80><button item-right ion-button block (click)="gotoOrderSummary()">Next</button></ion-col>
-			<ion-col width-10></ion-col>
+			<ion-col>
+				<button color="primary" item-right ion-button block (click)="chooseFood()">
+				{{food.title ? "Change" : "Select"}}
+				</button>
+			</ion-col>
+			<ion-col>
+				<button color="green" item-right ion-button block (click)="gotoOrderSummary()">Next</button>
+			</ion-col>
 			
 		</ion-row>
 	</ion-grid>

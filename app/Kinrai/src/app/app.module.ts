@@ -12,6 +12,7 @@ import { DatePicker } from '@ionic-native/date-picker';
 
 //external libs
 import {ChartsModule} from 'ng2-charts/ng2-charts';
+import '../../node_modules/chart.js/src/chart.js';
 
 
 
@@ -43,8 +44,9 @@ import { TablePage } from '../pages/table/table';
 import { SelectTablePage } from '../pages/select-table/select-table';
 import { SaleHistoryPage } from '../pages/sale-history/sale-history';
 import { FoodRanking } from '../pages/food-ranking/food-ranking';
+import { SalesByBills } from '../pages/sales-by-bills/sales-by-bills';
 
-import '../../node_modules/chart.js/src/chart.js';
+
 
 
 @NgModule({
@@ -71,7 +73,8 @@ import '../../node_modules/chart.js/src/chart.js';
   SelectTablePage,
   SaleHistoryPage,
   SalesGraph,
-  FoodRanking
+  FoodRanking,
+  SalesByBills
   ],
   imports: [
   ChartsModule,
@@ -103,7 +106,8 @@ import '../../node_modules/chart.js/src/chart.js';
   SelectTablePage,
   SaleHistoryPage,
   SalesGraph,
-  FoodRanking
+  FoodRanking,
+  SalesByBills
   ],
   providers: [
   {provide: ErrorHandler, useClass: IonicErrorHandler}, File, FileChooser, FilePath, DatePicker, OrderService

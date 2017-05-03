@@ -422,6 +422,7 @@ app.post('/newfood',(req, res)=>{
 			}
 
 			rawBill.orders.forEach(function(order){
+				console.log(order);
 				let o = new Order(order);
 				o.date = date;
 				o.bill = bill;
@@ -438,10 +439,53 @@ app.post('/newfood',(req, res)=>{
 		res.json("Bill was created")
 	});
 
+	app.post('/bill/update', function(req, res){
+		console.log(req.body);
+		console.log(req.body.bill.orders);
+
+		let id = req.body.bill._id;
+		let table_number = req.body.bill.table_number;
+		console.log(table_number);
+		// console.log(table_number);
+		let total_price = req.body.bill.total_price;
+		let orders = [];
+		req.body.bill.orders.map(order=>{
+			// console.log("order", order);
+			order.amount = parseInt(order.amount);
+			if(order._id){
+				let o = new Order();
+				o.bill = id;
+				o.food = order.food;
+				o.price = order.price;
+				o.status = order.status;
+				o.selected_toppings = order.selected_toppings;
+				o.date = order.date;
+				o.amount = parseInt(order.amount+"");
+				o.togo = order.togo;
+				orders.push(o);
+				o.save((err)=>{
+					if(err) throw err;
+				});	
+
+			}else{
+				let o = new Order(order);
+				orders.push(o);
+				o.save((err)=>{
+					if(err) throw err;
+				});
+			}
+		})
+		Bill.findByIdAndUpdate(id, {$set: {orders: orders, total_price: total_price}}, 
+			function(err, bill){
+				if(err) throw err;
+				console.log("updated");
+				res.send(bill);
+			})
+	});
 
 	app.get('/orders/', function(req, res){
 		// Order.find({ $or:[{status: "waiting"}, {status: "doing"}] }).populate('food').populate('bill').exec(
-		Order.find({ status:{$in:["waiting", "cooking", "ready"]} }).populate('food').populate('bill').exec(
+		Order.find({ status:{$in:["waiting", "cooking", "ready"]}, bill:{$ne: null} }).populate('food').populate('bill').exec(
 			(err, orders)=>{
 				if(err) throw err;
 				// console.log(orders);
@@ -514,7 +558,7 @@ app.post('/newfood',(req, res)=>{
 	});
 	app.post('/bills/table_number/', function(req, res){
 		let table_number = req.body.tableNumber;
-
+		console.log("table_number", table_number);
 		Bill.find({table_number: table_number, is_paid:false}).populate({path:'orders', populate:{path:'food'}}).exec((err, bills)=>{
 			if(err) throw err;
 			res.json(bills);
@@ -533,6 +577,13 @@ app.post('/newfood',(req, res)=>{
 			});
 		});
 		res.json("check bill completed");
+	});
+
+	app.post('/bills/remove', function(req, res){
+		Bill.findOneAndRemove({_id: req.body.id}, function(err){
+			if(err) throw err;
+			res.json("removed");
+		});
 	});
 
 	app.get('/bills/untitled/', (req, res) =>{
@@ -567,30 +618,26 @@ app.post('/newfood',(req, res)=>{
 
 
 	app.post('/sales/getByDate', (req, res)=>{
-		// let date = new Date();
-		// console.log("date.getHours()", date.getHours());
-		// Bill.find({}, function(err, bills){
-		// 	bills.map(bill=>{console.log(bill.date.getHours())});
-		// 	res.json(bills);
-		// })
-		// let date = new Date(req.body.date);
 		console.log(req.body.date);
 		let start = new Date(req.body.date);
 		let end = new Date(req.body.date);
+		let type = req.body.type; 
+		if(type == "month"){
+			start.setDate(1);
+			end.setMonth(end.getMonth() + 1);
+			end.setDate(0);
+		}else if(type == "year"){
+			start.setMonth(0);
+			start.setDate(1);
+			end.setMonth(12);
+			end.setDate(0);
+		}
 		start.setHours(0);
 		start.setMinutes(0);
 		start.setSeconds(0);
 		end.setHours(23);
 		end.setMinutes(59);
 		end.setSeconds(59);
-		// console.log("start.getHours()", start.getHours());
-		// console.log("end.getHours()", end.getHours());
-
-		// res.json({date:start, date2:end})
-		// console.log("Date", date);
-		// Bill.find({date:{$gte: start, $lte: end}}, function(err, bills){
-		// 	res.json(bills);
-		// })
 
 		Order.aggregate([
 			{$match: {
@@ -630,34 +677,109 @@ app.post('/newfood',(req, res)=>{
 					}}
 					])
 				.exec(function(err, sale_history){
-					// Bill.find({date: {$gte: start, $lte: end}}, {date: 1, total_price: 1})
-					// .exec(function(err, bills){
-					// 	res.json(bills);
-					// })
-					Bill.aggregate([
-						{$match: {
-							date: {$gte: start, $lte: end}
-						}},
-						{$group:{
-							_id:{
-								hours: {$hour: '$date'}
-							},
-							sale: {$sum: '$total_price'}
-						}},
-						{$project:{
-							_id: null,
-							hours: "$_id.hours",
-							sale: 1
-						}},
-						{$sort: {hours: 1}}
-						])
-					.exec(function(err, bills){
-						res.json({summary: sale_history, foodRanking: foods, salesPerHour: bills});
-					})
-					
+					if(type == "year"){
+						Bill.aggregate([
+							{$match: {
+								date: {$gte: start, $lte: end}
+							}},
+							{$group:{
+								_id:{
+									hours: {$month: '$date'}
+								},
+								sale: {$sum: '$total_price'}
+							}},
+							{$project:{
+								_id: null,
+								hours: "$_id.hours",
+								sale: 1
+							}},
+							{$sort: {hours: 1}}
+							])
+						.exec(function(err, bills){
+							res.json({summary: sale_history, foodRanking: foods, salesPerHour: bills});
+						})
+					}else if(type == "month"){
+						Bill.aggregate([
+							{$match: {
+								date: {$gte: start, $lte: end}
+							}},
+							{$group:{
+								_id:{
+									hours: {$dayOfMonth: '$date'}
+								},
+								sale: {$sum: '$total_price'}
+							}},
+							{$project:{
+								_id: null,
+								hours: "$_id.hours",
+								sale: 1
+							}},
+							{$sort: {hours: 1}}
+							])
+						.exec(function(err, bills){
+							res.json({summary: sale_history, foodRanking: foods, salesPerHour: bills});
+						})
+					}else{
+						Bill.aggregate([
+							{$match: {
+								date: {$gte: start, $lte: end}
+							}},
+							{$group:{
+								_id:{
+									hours: {$hour: '$date'}
+								},
+								sale: {$sum: '$total_price'}
+							}},
+							{$project:{
+								_id: null,
+								hours: "$_id.hours",
+								sale: 1
+							}},
+							{$sort: {hours: 1}}
+							])
+						.exec(function(err, bills){
+							res.json({summary: sale_history, foodRanking: foods, salesPerHour: bills});
+						})
+					}
 				})			
 			})
 		})
+
+	app.post('/sales/getBillsByDate', (req, res)=>{
+
+		let start = new Date(req.body.date);
+		let end = new Date(req.body.date);
+		let type = req.body.type; 
+		if(type == "month"){
+			start.setDate(1);
+			end.setMonth(end.getMonth() + 1);
+			end.setDate(0);
+		}else if(type == "year"){
+			start.setMonth(0);
+			start.setDate(1);
+			end.setMonth(12);
+			end.setDate(0);
+		}
+
+		start.setHours(0);
+		start.setMinutes(0);
+		start.setSeconds(0);
+		end.setHours(23);
+		end.setMinutes(59);
+		end.setSeconds(59);
+
+		Bill.find({date: {$gte: start, $lte: end}})
+		.populate(		
+		{			
+			path: 'orders', 
+			// match: {foods:{$exists: true, $ne:[]}},
+			populate: {path: 'food'}
+		}
+		)
+		.exec((err, bills)=>{
+			res.json(bills);
+		})
+	})
 
 
 

@@ -1,10 +1,10 @@
 <ion-menu [content]="content">
-<ion-header style="height: 200px">
+<ion-header style="height: 200px; background-color: darkslategray;">
   </ion-header>
 
   <ion-content>
     <ion-list no-lines>
-      <ion-item *ngFor=" let group of groupPages ">
+      <ion-item *ngFor=" let group of groupPages " style="padding-left: 16px;">
       <b>{{group.name}}</b>
         <button menuClose ion-item *ngFor=" let page of group.pages " (click)="openPage(page.component)">
           {{page.title}}

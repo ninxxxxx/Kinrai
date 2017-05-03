@@ -19,7 +19,7 @@ Ionic pages and navigation.
 			<ion-row>
 				<ion-col width-50>
 					<ion-label stacked color="light" style="margin-top: 0px; margin-bottom: 3px;">Table No.</ion-label>
-					<button (click)="selectTable()" ion-button style="background: rgb(37, 35, 59); color:#F8971D; border-radius: 10px; min-height: 60px; min-width: 150px;" >
+					<button (click)="selectTable()" ion-button style="background: rgb(37, 35, 59); color:#F8971D; border-radius: 10px; min-height: 60px; min-width: 150px;">
 						<h6 style="margin-top: 10px;">
 							{{tableNumber.zone ? "Zone: " + tableNumber.zone : "select table"}} 
 							{{tableNumber.table && tableNumber.zone != 'takeout' ? "Table: " + tableNumber.table : ""}} 
@@ -42,11 +42,16 @@ Ionic pages and navigation.
 
 
 <ion-content>
-	<ion-card *ngFor="let order of orders" (click)="editOrder(order)">
-		<ion-card-header style="padding-bottom: 0px;">
-			<h1>{{order.food.title}}</h1>
+	<ion-card *ngFor="let order of orders; let i = index; ">
+		<ion-card-header style="padding-bottom: 0px; padding-top: 0px;">
+			<ion-item no-lines>
+			<h1 item-left (click)="editOrder(order)">{{order.food.title}}</h1>
+			<button ion-button clear item-right style="margin-right: 0px;" (click)="removeOrder(i)">
+				<ion-icon name="trash"></ion-icon>
+			</button>
+			</ion-item>
 		</ion-card-header>
-		<ion-card-content>
+		<ion-card-content (click)="editOrder(order)">
 			<ion-item style="padding-left: 0px;">
 				<div item-left style="padding-top: 0px; vertical-align: text-top;" >
 					<h5>To Go/ For Here: {{order.togo ? "To Go" : "For Here"}}</h5>
@@ -103,7 +108,8 @@ Ionic pages and navigation.
 			<button block color="primary" ion-button (click)="declineRequest()">Decline</button>
 		</ion-col>
 		<ion-col>
-			<button block color="green" ion-button (click)="checkTableZone()">{{bill ? "approve" : "done"}}</button>	
+			<button block color="green" ion-button *ngIf="bill.id != ''" (click)="checkTableZone()">{{(bill && bill.id != "") ? "approve" : "done"}}</button>	
+			<button block color="green" ion-button *ngIf="bill.id == ''" (click)="updateBill()">save</button>	
 		</ion-col>
 	</ion-row>
 </ion-grid>

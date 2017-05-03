@@ -7,14 +7,15 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { FoodCategoriesPage } from '../pages/food-categories/food-categories';
 import { TablePage } from '../pages/table/table';
 import { SaleHistoryPage }  from '../pages/sale-history/sale-history';
-
+import { SalesByBills } from '../pages/sales-by-bills/sales-by-bills';
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
-  // rootPage = TabsPage;
-  rootPage = SaleHistoryPage;
+  rootPage = TabsPage;
+  // rootPage = SaleHistoryPage;
+  // rootPage = SalesByBills;
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
 
   @ViewChild(Nav) nav: Nav;
@@ -35,7 +36,7 @@ export class MyApp {
       pages: [
       {title: 'Foods', component: FoodCategoriesPage},
       {title: 'Tables', component: TablePage},
-      {title: 'Sale History', component: SaleHistoryPage},
+      {title: 'Sale Analyzing', component: SaleHistoryPage},
       // {title: 'Promotion', component: ManagementPage},
       ]
     }

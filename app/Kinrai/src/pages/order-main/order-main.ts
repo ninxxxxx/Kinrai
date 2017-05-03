@@ -34,7 +34,7 @@ export class OrderMainPage {
   orders: any;
 
   isPreOrderComing: boolean;
-
+  currentItem:number;
   socket: any;
 
   constructor(
@@ -46,7 +46,7 @@ export class OrderMainPage {
     public modalCtrl: ModalController, 
     public viewCtrl: ViewController
     ) {
-
+    this.currentItem = 0;
     this.isPreOrderComing = false;
     this.categories = [];
     this.chosenCats = [];
@@ -83,7 +83,9 @@ export class OrderMainPage {
   ionViewDidLoad() {
     // console.log('ionViewDidLoad OrderMainPage');
   }
-
+  changeCurItem(index){
+    this.currentItem = index;
+  }
 
   getFullCategories(){
     this.orderService.getFullCategories().subscribe(
@@ -99,8 +101,11 @@ export class OrderMainPage {
   getOrders(){
     this.orderService.getOrders().subscribe(
       res =>{
-        console.log(res);
-        this.orders = res;
+        res.map(order=>{
+          if(order.bill != null)
+            this.orders.push(order);
+        })
+        // console.log(res);
       },
       err =>{
         this.toast(err);
@@ -138,18 +143,18 @@ export class OrderMainPage {
       title: 'Did you done this order ?',
       message: 'Please make sure before done this order',
       buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            // console.log('Disagree clicked');
-          }
-        },
-        {
-          text: 'OK',
-          handler: () => {
-            this.changeOrderStatus(order_id, "done");
-          }
+      {
+        text: 'Cancel',
+        handler: () => {
+          // console.log('Disagree clicked');
         }
+      },
+      {
+        text: 'OK',
+        handler: () => {
+          this.changeOrderStatus(order_id, "done");
+        }
+      }
       ]
     });
     confirm.present();

@@ -1,5 +1,4 @@
-let l = [];
-if(l.length)
-	console.log("yes");
-else
-	console.log("no");
+setTimeout(()=>{
+	console.log("1");
+}, 1000);
+console.log("2");

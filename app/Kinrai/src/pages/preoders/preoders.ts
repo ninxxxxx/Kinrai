@@ -24,11 +24,11 @@ import { OrderService } from '../../providers/order-service';
   	socket: any;
   	constructor(
       public viewCtrl: ViewController,
-  		public modalCtrl: ModalController,
-  		private orderService: OrderService, 
-  		public navCtrl: NavController, 
-  		public navParams: NavParams
-  		) 
+      public modalCtrl: ModalController,
+      private orderService: OrderService, 
+      public navCtrl: NavController, 
+      public navParams: NavParams
+      ) 
   	{
   		this.bills = [];
 
@@ -47,13 +47,15 @@ import { OrderService } from '../../providers/order-service';
   	}
 
   	openSummaryOrder(bill){
-  		let modal = this.modalCtrl.create(OrderSummaryPage, {bill: bill});
-  		modal.present();
-  	}
 
-  	removePre(bill){
-  		this.socket.emit("remove pre-order", bill);
-  	}
+      console.log("from Pre-Order", bill);
+      let modal = this.modalCtrl.create(OrderSummaryPage, {bill: bill});
+      modal.present();
+    }
+
+    removePre(bill){
+      this.socket.emit("remove pre-order", bill);
+    }
 
     cancel(){
       this.viewCtrl.dismiss();

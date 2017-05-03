@@ -67,8 +67,7 @@ import { OrderService } from '../../providers/order-service';
     }
 
     cancel(){
-      this.viewCtrl.dismiss();
-      this.viewCtrl.dismiss();
+      this.viewCtrl.dismiss(this.food);
     }
 
     sumPrice(){
