@@ -105,7 +105,7 @@ export class OrderMainPage {
           if(order.bill != null)
             this.orders.push(order);
         })
-        // console.log(res);
+        console.log("orders from", this.orders);
       },
       err =>{
         this.toast(err);
@@ -208,12 +208,14 @@ export class OrderMainPage {
 
       this.orderService.getOrderByFilter(chosenCatsId).subscribe(
         orders =>{
-          console.log(orders); 
+          // console.log(orders); 
           this.orders = []
           orders.map(order=>{
-            if(order.food.category)
+            if(order.food.category && order.bill){
               this.orders.push(order);
+            }
           });
+            console.log(this.orders);
         },
         err =>{
           console.log(err);

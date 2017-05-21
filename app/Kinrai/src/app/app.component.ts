@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, Nav, Tabs } from 'ionic-angular';
+import { Platform, Nav, Tabs, ModalController } from 'ionic-angular';
 // import { StatusBar } from '@ionic-native/statusbar';
 // import { Splashscreen } from '@ionic-native/splashscreen';
 
@@ -19,7 +19,7 @@ export class MyApp {
   groupPages: Array<{name: string, pages:Array<{title: string, component: any}>}>;
 
   @ViewChild(Nav) nav: Nav;
-  constructor(platform: Platform) {
+  constructor(platform: Platform, public modalCtrl: ModalController) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -44,7 +44,9 @@ export class MyApp {
 
   }
   openPage(page){
-    this.nav.push(page);
+    let modal = this.modalCtrl.create(page);
+    modal.present();
+    // this.nav.push(page);
   }
 
 }

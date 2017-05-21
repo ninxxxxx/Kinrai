@@ -14,9 +14,11 @@ import {ToastController} from 'ionic-angular';
   	server: string;
 
   	constructor(public toastCtrl: ToastController, private http: Http) {
+      this.server = 'http://172.30.88.92:8080/';
 
+      // this.server = 'http://172.30.89.115:8080/';
       // this.server = 'http://172.30.89.14:8080/';
-      this.server = 'http://172.30.230.103:8080/';
+      // this.server = 'http://172.30.230.103:8080/';
 
     }
 
